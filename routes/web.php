@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/tickets/crear', function () {
+    return view('tickets.create');
+})->name('tickets.create');
