@@ -25,3 +25,7 @@ Route::get('/editar-perfil', function () {
 Route::get('/tickets/historial', function () {
     return view('historial_tickets');
 })->name('tickets.historial');
+
+Route::get('/register', function () {
+    return view('gestion');
+});
