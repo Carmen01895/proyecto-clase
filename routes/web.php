@@ -2,9 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/tickets/crear', function () {
-    return view('tickets.create');
-})->name('tickets.create');
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,6 +22,10 @@ Route::get('/editar-perfil', function () {
 Route::get('/tickets/historial', function () {
     return view('historial_tickets');
 })->name('tickets.historial');
+
+Route::get('/tickets/crear', function () {
+    return view('tickets.create');
+})->name('tickets.create');
 
 Route::get('/register', function () {
     return view('gestion');
