@@ -217,9 +217,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_ticket'])) {
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">Listado de Tickets</h4>
-            <button class="btn btn-nuevo">
+            <a href="{{ route('tickets.create') }}" class="btn btn-nuevo">
                 <i class="bi bi-plus-circle"></i> Nuevo Ticket
-            </button>
+            </a>
         </div>
 
         <!-- Filtros -->
