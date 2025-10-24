@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil | Sistema de Tickets - Dulces Ricos</title>
+    <title>Editar Perfil | Sistema de Tickets - Dulces Ricos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -53,19 +53,29 @@
             color: #444;
         }
 
-        input[readonly] {
-            background-color: #f7f7f7;
-            border: 1px solid #ddd;
-        }
-
+        /* Ya no necesitamos el estilo para [readonly] */
+        
         .btn-editar {
             background-color: #1cc88a;
             color: white;
             border: none;
+            padding: 10px 25px; /* Ajuste leve para mejor apariencia */
         }
 
         .btn-editar:hover {
             background-color: #17a673;
+        }
+        
+        /* Estilo para el botón cancelar */
+        .btn-cancelar {
+            background-color: #858796;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+        }
+        .btn-cancelar:hover {
+            background-color: #707280;
+            color: white;
         }
 
         footer {
@@ -80,52 +90,45 @@
 
 <div class="perfil-card">
     <div class="perfil-header">
-        <h2>Perfil del Usuario</h2>
-        <p>Información personal registrada en el sistema</p>
+        <h2>Editar Perfil</h2>
+        <p>Actualiza tu información personal</p>
         <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
     </div>
 
     <div class="perfil-body">
-        <form>
-            <div class="row g-4">
-                
+        
+        <form method="POST" action="{{ url('/guardar-perfil') }}">
+            @csrf 
+            @method('PUT') <div class="row g-4">
                 <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" value="Fanny" readonly>
+                    <input type="text" class="form-control" value="Fanny" name="nombre">
                 </div>
-                
                 <div class="col-md-6">
                     <label>Apellido</label>
-                    <input type="text" class="form-control" value="Alegría" readonly>
+                    <input type="text" class="form-control" value="Alegría" name="apellido">
                 </div>
-
                 <div class="col-md-6">
                     <label>Correo electrónico</label>
-                    <input type="email" class="form-control" value="fanny@example.com" readonly>
+                    <input type="email" class="form-control" value="fanny@example.com" name="correo">
                 </div>
-
                 <div class="col-md-6">
                     <label>Departamento</label>
-                    <input type="text" class="form-control" value="Soporte Técnico" readonly>
+                    <input type="text" class="form-control" value="Soporte Técnico" name="departamento" readonly>
                 </div>
-
                 <div class="col-md-6">
                     <label>Puesto</label>
-                    <input type="text" class="form-control" value="Usuario" readonly>
+                    <input type="text" class="form-control" value="Usuario" name="puesto" readonly>
                 </div>
-                
-                </div>
+            </div>
 
             <div class="text-center mt-5">
-               <a href="{{ url('/editar-perfil') }}" class="btn btn-editar">Editar Datos</a>
+                <button type="submit" class="btn btn-editar">Guardar Cambios</button>
+                
+                <a href="{{ url('/mi-perfil') }}" class="btn btn-cancelar ms-2">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
-
-<footer>
-    Sistema de Gestión de Tickets © Dulces Ricos 
-</footer>
-
 </body>
 </html>

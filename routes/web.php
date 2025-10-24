@@ -16,3 +16,7 @@ Route::get('/login', function () {
 Route::get('/mi-perfil', function () {
     return view('perfil');
 });
+
+Route::get('/editar-perfil', function () {
+    return view('editar-perfil');
+});
