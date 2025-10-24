@@ -9,3 +9,7 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('auth.login');
 });
+
+Route::get('/mi-perfil', function () {
+    return view('perfil');
+});
