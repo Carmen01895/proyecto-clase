@@ -1,0 +1,121 @@
+body {
+    background-color: #f3f6fb;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.ticket-form-container {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 900px;
+    margin: 60px auto;
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.ticket-header h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.ticket-body {
+    padding: 40px 60px 50px;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+label {
+    font-weight: 600;
+    color: #444;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+input[readonly] {
+    background-color: #f7f7f7;
+    color: #555;
+}
+input:focus,
+select:focus,
+textarea:focus {
+    background-color: #fff;
+    border-color: #4e73df;
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
+}
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-enviar {
+    background-color: #1cc88a;
+    color: white;
+}
+
+.btn-enviar:hover {
+    background-color: #17a673;
+}
+.btn-cancelar {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-cancelar:hover {
+    background-color: #cfcfcf;
+}
+
+/* Responsivo */
+@media (max-width: 700px) {
+    .ticket-body {
+        padding: 30px 25px;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .ticket-header h2 {
+        font-size: 1.6rem;
+    }
+}
