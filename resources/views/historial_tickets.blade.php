@@ -288,9 +288,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_ticket'])) {
     </div>
 </div>
 
-<footer>
-    Sistema de Gestión de Tickets © Dulces Ricos | Desarrollado por Fanny Alegría
-</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

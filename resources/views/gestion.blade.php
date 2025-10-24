@@ -172,9 +172,7 @@
     </div>
 </div>
 
-<footer>
-    Sistema de Gestión de Tickets © Dulces Ricos | Desarrollado por Fanny Alegría
-</footer>
+
 
 <script>
 document.getElementById("formUsuario").addEventListener("submit", function(e){
