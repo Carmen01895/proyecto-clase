@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
     <div class="container">
         
-        <a class="navbar-brand text-white d-flex align-items-center" href="{{ url('/') }}">
+        <a class="navbar-brand text-white d-flex align-items-center" href="{{ route('tickets.historial') }}">
             
             <img 
                 src="{{ asset('images/logo.png') }}" 
@@ -34,12 +34,24 @@
                 </li>
 
                 <li class="nav-item ms-3">
-                    <a class="nav-link text-white d-flex align-items-center {{ request()->routeIs('perfil') ? 'active' : '' }}"
+                    <a class="nav-link text-white d-flex align-items-center {{ request()->routeIs('perfil*') ? 'active' : '' }}"
                        href="{{ route('perfil') }}" title="Mi perfil" aria-label="Mi perfil">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                             <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 4.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm0 8a5.5 5.5 0 0 1-4.473-2.344c.03-1.463 2.948-2.266 4.473-2.266 1.526 0 4.444.803 4.473 2.266A5.5 5.5 0 0 1 8 12.5z"/>
                         </svg>
                     </a>
+                </li>
+
+                <!-- Logout como icono -->
+                <li class="nav-item ms-3">
+                    <form method="GET" action="{{ route('logout') }}" class="d-inline">
+                        <button type="submit" class="nav-link btn btn-link text-white p-0 d-flex align-items-center" title="Cerrar Sesión" aria-label="Cerrar Sesión">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M6 2a1 1 0 0 0-1 1v2H4V3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2h1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6z"/>
+                                <path d="M.146 8.354a.5.5 0 0 1 0-.708L3.793 4H3.5a.5.5 0 0 1 0-1h3.5a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-1 0V5.207L.146 8.354z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
