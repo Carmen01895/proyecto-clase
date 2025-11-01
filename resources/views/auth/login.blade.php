@@ -3,92 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dulces Ricos</title>
+    <title>Iniciar Sesión | Sistema de Tickets - Dulces Ricos</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
-            background-color: #4e73df; 
+            background: #f3f6fb;
             font-family: 'Poppins', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            margin: 0;
+            display: flex; 
+            flex-direction: column;
         }
 
-        .login-card {
-            background: #fff;
+        .glass-container {
+            background-color: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            padding: 40px;
-            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 900px;
             width: 90%;
+            margin: auto;
+        }
+        
+        .welcome-column {
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            color: white;
+            padding: 3rem;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .login-card h2 {
-            font-weight: 600;
-            color: #4e73df;
-            margin-bottom: 25px;
+        .welcome-column .logo-img {
+            width: 80px; 
+            height: 80px;
+            margin: 0 auto 1.5rem auto; 
+            object-fit: contain; 
+        }
+
+        .login-form-content {
+            padding: 3rem;
         }
 
         label {
-            font-weight: 500;
+            font-weight: 600;
             color: #444;
-            text-align: left;
-            display: block;
-            margin-bottom: 5px;
         }
 
         .form-control {
             border-radius: 8px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
+            background-color: #f7f7f7;
         }
 
         .btn-login {
-            background-color: #1cc88a; 
+            background-color: #1cc88a;
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 12px 25px;
             border-radius: 8px;
             font-weight: 600;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .btn-login:hover {
             background-color: #17a673;
         }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px 0;
+            color: #777;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <h2>Iniciar Sesión</h2>
-    <p class="text-muted mb-4">Ingresa tus credenciales para acceder al sistema.</p>
+<div class="container d-flex flex-grow-1 align-items-center justify-content-center">
+    <div class="glass-container row g-0">
+        
+        <div class="col-md-6 order-md-1 login-form-content">
+            <h2 class="text-3xl font-weight-bold mb-3" style="color:#4e73df;">Iniciar Sesión</h2>
+            <p class="text-secondary mb-4">Ingresa tus credenciales para acceder al sistema</p>
+            
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-    <form>
-        <div class="mb-3 text-start">
-            <label for="usuario">Usuario</label>
-            <input type="text" class="form-control" id="usuario" placeholder="ejemplo01" required>
+                <div class="mb-4">
+                    <label for="email">Número de Usuario</label>
+                    <input type="email" name="email" class="form-control" id="email" required autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password">Contraseña</label>
+                    <input type="password" name="password" class="form-control" id="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-login">Acceder</button>
+            </form>
         </div>
 
-        <div class="mb-4 text-start">
-            <label for="contrasena">Contraseña</label>
-            <input type="password" class="form-control" id="contrasena" placeholder="********" required>
+        <div class="col-md-6 order-md-2 welcome-column">
+            <img 
+                src="{{ asset('images/logo.png') }}" 
+                alt="Logo Dulces Ricos" 
+                class="logo-img"
+            >
+            <h3 class="font-weight-bold mb-3">Dulces Ricos</h3>
+            <p class="lead">
+                Estamos felices de verte. Accede para gestionar tus tickets.
+            </p>
         </div>
 
-        <button type="submit" class="btn btn-login">Acceder</button>
-
-        <div class="mt-3">
-            <a href="#" class="text-primary" style="font-size: 0.9rem;">¿Olvidaste tu contraseña?</a>
-        </div>
-    </form>
+    </div>
 </div>
 
+<footer>
+    Sistema de Gestión de Tickets © Dulces Ricos
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
