@@ -117,7 +117,7 @@
                 </div>
 
             <div class="text-center mt-5">
-               <a href="{{ url('/editar-perfil') }}" class="btn btn-editar">Editar Datos</a>
+               <a href="{{ route('perfil.editar') }}" class="btn btn-editar">Editar Datos</a>
             </div>
         </form>
     </div>

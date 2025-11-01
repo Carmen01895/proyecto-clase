@@ -125,7 +125,7 @@
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-editar">Guardar Cambios</button>
                 
-                <a href="{{ url('/mi-perfil') }}" class="btn btn-cancelar ms-2">Cancelar</a>
+                <a href="{{ url('perfil') }}" class="btn btn-cancelar ms-2">Cancelar</a>
             </div>
         </form>
     </div>
