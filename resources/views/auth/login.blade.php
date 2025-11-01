@@ -96,18 +96,43 @@
             <h2 class="text-3xl font-weight-bold mb-3" style="color:#4e73df;">Iniciar Sesión</h2>
             <p class="text-secondary mb-4">Ingresa tus credenciales para acceder al sistema</p>
             
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login.post') }}">
                 @csrf
 
                 <div class="mb-4">
-                    <label for="email">Número de Usuario</label>
-                    <input type="email" name="email" class="form-control" id="email" required autofocus>
+                    <label for="email">Correo de Usuario</label>
+                    <input 
+                        type="email" 
+                        name="correo" 
+                        class="form-control @error('correo') is-invalid @enderror" 
+                        id="correo" 
+                        required 
+                        autofocus>
+                    @error('correo')
+                        <div class="invalid-feedback" d-block>
+                            {{ $message }}
+                            </div>
+                    @enderror
                 </div>
 
                 <div class="mb-4">
                     <label for="password">Contraseña</label>
-                    <input type="password" name="password" class="form-control" id="password" required>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        class="form-control @error('password') is-invalid @enderror" 
+                        id="password" 
+                        required>
+                    @error('password')
+                        <div class="invalid-feedback" d-block>
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
+
+                @if($errors->has('correo') && $errors->first('correo') == 'Estas credenciales no coinciden con nuestros registros.')
+                    <div class="alert alert-danger"> {{$errors->first('correo')}} </div>
+                @endif
 
                 <button type="submit" class="btn btn-login">Acceder</button>
             </form>

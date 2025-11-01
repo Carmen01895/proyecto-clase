@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+
+class CheckUserRole
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        if (Auth::check()){
+            return redirect()->route('login.show');
+        }
+
+        $user = Auth::user();
+
+        if (!in_array($user->id_rol, $allowedRoles)) {
+            Auth::logout();
+            return redirect('/')->withErrors(['global' => 'Acceso no autorizado para tu tipo de cuenta.']);
+        }
+        return $next($request);
+    }
+}
+

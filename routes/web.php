@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 
 
 //Rutas de autenticación----------------------------------------------
 Route::get('/', function () {
     return view('auth.login');
 })->name('login');
+
+Route::post('/', [LoginController::class, 'authenticate'])->name('login.post');
+Route::middleware(['auth','role:3'])->prefix('empleado')->group(function(){});
 
 Route::get('/logout', function () {
     Auth::logout();
