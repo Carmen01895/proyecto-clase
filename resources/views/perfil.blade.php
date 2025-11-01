@@ -78,6 +78,8 @@
 </head>
 <body>
 
+<x-navbar />
+
 <div class="perfil-card">
     <div class="perfil-header">
         <h2>Perfil del Usuario</h2>

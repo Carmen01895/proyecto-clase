@@ -168,6 +168,7 @@
     </style>
 </head>
 <body>
+<x-navbar />
 
 <?php
 // Función para obtener la clase CSS según el estado

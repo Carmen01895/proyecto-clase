@@ -87,6 +87,7 @@
     </style>
 </head>
 <body>
+<x-navbar />
 
 <div class="perfil-card">
     <div class="perfil-header">
