@@ -92,12 +92,20 @@ button {
     background-color: #17a673;
 }
 .btn-cancelar {
+    display: inline-block;
+    padding: 10px 20px;
     background-color: #e0e0e0;
     color: #333;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
 }
 
 .btn-cancelar:hover {
     background-color: #cfcfcf;
+    color: #000;
 }
 
 /* Responsivo */

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\TicketController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -31,9 +32,8 @@ Route::get('/tickets', function () {
     return view('historial_tickets');
 })->name('tickets.historial');
 
-Route::get('/tickets/crear', function () {
-    return view('tickets.create');
-})->name('tickets.create');
+Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');
+Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
 
 //Rutas de registro---------------------------------------------------
 Route::get('/registro', function () {
