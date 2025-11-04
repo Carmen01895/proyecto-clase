@@ -84,7 +84,9 @@
     <div class="perfil-header">
         <h2>Perfil del Usuario</h2>
         <p>Información personal registrada en el sistema</p>
-        <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+        
+    
+        <img src="{{ asset($usuario->foto_perfil ?? 'images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
     </div>
 
     <div class="perfil-body">
@@ -93,30 +95,30 @@
                 
                 <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" value="Fanny" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->nombre }}" readonly>
                 </div>
                 
                 <div class="col-md-6">
                     <label>Apellido</label>
-                    <input type="text" class="form-control" value="Alegría" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->apellido }}" readonly>
                 </div>
 
                 <div class="col-md-6">
                     <label>Correo electrónico</label>
-                    <input type="email" class="form-control" value="fanny@example.com" readonly>
+                    <input type="email" class="form-control" value="{{ $usuario->correo }}" readonly>
                 </div>
 
                 <div class="col-md-6">
                     <label>Departamento</label>
-                    <input type="text" class="form-control" value="Soporte Técnico" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->id_departamento }}" readonly>
                 </div>
 
                 <div class="col-md-6">
                     <label>Puesto</label>
-                    <input type="text" class="form-control" value="Usuario" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->puesto }}" readonly>
                 </div>
                 
-                </div>
+            </div>
 
             <div class="text-center mt-5">
                <a href="{{ route('perfil.editar') }}" class="btn btn-editar">Editar Datos</a>

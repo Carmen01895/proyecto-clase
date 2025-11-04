@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\PerfilController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -23,9 +24,12 @@ Route::get('/perfil', function () {
     return view('perfil');
 })->name('perfil');
 
+Route::get('/mi-perfil', [PerfilController::class, 'show'])->middleware('auth');
+
 Route::get('/perfil/editar', function () {
     return view('editar-perfil');
 })->name('perfil.editar');
+
 
 // Rutas de tickets---------------------------------------------------
 Route::get('/tickets', function () {
