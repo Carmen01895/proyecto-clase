@@ -10,12 +10,17 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
-    public function create()
-    {
+    public function create(){
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión para crear un ticket');
+        }
+
         $usuario = Auth::user();
         $estatus = EstatusTicket::all();
+
         return view('tickets.create', compact('usuario', 'estatus'));
     }
+
 
     public function store(Request $request)
     {
