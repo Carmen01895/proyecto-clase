@@ -63,13 +63,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="prioridad">Prioridad</label>
-                    <input type="text" id="prioridad" value="Pendiente" readonly>
-                    <input type="hidden" name="id_estatus" value="4">
-                </div>
-
-
-                <div class="form-group">
                     <label for="archivo">Adjuntar evidencia (opcional)</label>
                     <input type="file" id="archivo" name="archivo" accept="image/*,.pdf">
                 </div>

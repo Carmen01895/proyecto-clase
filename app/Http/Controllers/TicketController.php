@@ -28,7 +28,6 @@ class TicketController extends Controller
             $request->validate([
                 'titulo' => 'required|string|min:8|max:100',
                 'descripcion' => 'required|string|min:20',
-                'id_estatus' => 'required|exists:estatus_ticket,id_estatus',
                 'archivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             ]);
 
@@ -36,7 +35,6 @@ class TicketController extends Controller
             $ticket->titulo = $request->titulo;
             $ticket->descripcion = $request->descripcion;
             $ticket->id_usuario = Auth::id(); //obtiene el id del usuario, revisar en caso de que haya algun problema :)
-            $ticket->id_estatus = $request->id_estatus;
 
             if ($request->hasFile('archivo')) {
                 $file = $request->file('archivo');
