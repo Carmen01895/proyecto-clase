@@ -20,11 +20,8 @@ Route::get('/logout', function () {
 })->name('logout');
 
 // Rutas de perfil----------------------------------------------------
-Route::get('/perfil', function () {
-    return view('perfil');
-})->name('perfil');
 
-Route::get('/mi-perfil', [PerfilController::class, 'show'])->middleware('auth');
+Route::get('/perfil', [PerfilController::class, 'show'])->middleware('auth')->name('perfil');
 
 Route::get('/perfil/editar', function () {
     return view('editar-perfil');

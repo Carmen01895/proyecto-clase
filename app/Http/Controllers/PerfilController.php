@@ -10,7 +10,7 @@ class PerfilController extends Controller
     
     public function show()
     {
-        $usuario = Auth::user();
+        $usuario = Auth::user()->load('departamento');
 
         return view('perfil', ['usuario' => $usuario]);
     }

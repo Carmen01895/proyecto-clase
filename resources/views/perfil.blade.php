@@ -110,7 +110,7 @@
 
                 <div class="col-md-6">
                     <label>Departamento</label>
-                    <input type="text" class="form-control" value="{{ $usuario->id_departamento }}" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->departamento->nombre }}" readonly>
                 </div>
 
                 <div class="col-md-6">
