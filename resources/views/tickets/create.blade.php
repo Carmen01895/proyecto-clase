@@ -54,23 +54,20 @@
 
                 <div class="form-group">
                     <label for="titulo">Título del problema</label>
-                    <input type="text" id="titulo" name="titulo" placeholder="Ejemplo: No puedo imprimir" required>
+                    <input type="text" id="titulo" name="titulo" placeholder="Ejemplo: No puedo imprimir" minlength="8" maxlength="100" required>
                 </div>
 
                 <div class="form-group">
                     <label for="descripcion">Descripción detallada</label>
-                    <textarea id="descripcion" name="descripcion" rows="5" placeholder="Describe tu problema con detalle..." required></textarea>
+                    <textarea id="descripcion" name="descripcion" rows="5" placeholder="Describe tu problema con detalle..." minlength="20" required></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="prioridad">Prioridad</label>
-                    <select id="prioridad" name="id_estatus" required>
-                        <option value="">Selecciona una prioridad</option>
-                        @foreach ($estatus as $e)
-                            <option value="{{ $e->id_estatus }}">{{ $e->nombre_estatus }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" id="prioridad" value="Pendiente" readonly>
+                    <input type="hidden" name="id_estatus" value="4">
                 </div>
+
 
                 <div class="form-group">
                     <label for="archivo">Adjuntar evidencia (opcional)</label>

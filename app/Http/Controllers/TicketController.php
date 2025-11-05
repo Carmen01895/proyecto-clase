@@ -21,8 +21,8 @@ class TicketController extends Controller
     {
         try {
             $request->validate([
-                'titulo' => 'required|string|max:200',
-                'descripcion' => 'required|string',
+                'titulo' => 'required|string|min:8|max:100',
+                'descripcion' => 'required|string|min:20',
                 'id_estatus' => 'required|exists:estatus_ticket,id_estatus',
                 'archivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             ]);
@@ -41,9 +41,9 @@ class TicketController extends Controller
 
             $ticket->save();
 
-            return redirect()->back()->with('success', 'Ticket registrado correctamente.');
+            return redirect()->back()->with('success', 'Ticket registrado correctamente');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al registrar el ticket. Inténtalo nuevamente.');
+            return redirect()->back()->with('error', 'Error al registrar el ticket. Inténtalo nuevamente');
         }
     }
 }
