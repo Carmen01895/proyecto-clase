@@ -86,7 +86,11 @@
         <p>Información personal registrada en el sistema</p>
         
     
-        <img src="{{ asset($usuario->foto_perfil ?? 'images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+    @if ($usuario->foto_perfil)
+    <img src="{{ asset($usuario->foto_perfil) }}" alt="Foto de perfil" class="foto-perfil">
+    @else
+    <div class="foto-perfil"></div>
+     @endif
     </div>
 
     <div class="perfil-body">
@@ -110,7 +114,7 @@
 
                 <div class="col-md-6">
                     <label>Departamento</label>
-                    <input type="text" class="form-control" value="{{ $usuario->departamento->nombre }}" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->departamento->nombre_departamento }}" readonly>
                 </div>
 
                 <div class="col-md-6">
