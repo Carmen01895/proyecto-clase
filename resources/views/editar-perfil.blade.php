@@ -52,21 +52,22 @@
             font-weight: 600;
             color: #444;
         }
+        input[readonly] {
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+        }
 
-        /* Ya no necesitamos el estilo para [readonly] */
-        
         .btn-editar {
             background-color: #1cc88a;
             color: white;
             border: none;
-            padding: 10px 25px; /* Ajuste leve para mejor apariencia */
+            padding: 10px 25px;
         }
 
         .btn-editar:hover {
             background-color: #17a673;
         }
         
-        /* Estilo para el botón cancelar */
         .btn-cancelar {
             background-color: #858796;
             color: white;
@@ -93,40 +94,62 @@
     <div class="perfil-header">
         <h2>Editar Perfil</h2>
         <p>Actualiza tu información personal</p>
-        <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+        
+        @if ($usuario->foto_perfil)
+            <img src="{{ asset('storage/' . $usuario->foto_perfil) }}" alt="Foto de perfil" class="foto-perfil">
+        @else
+            <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+        @endif
     </div>
 
     <div class="perfil-body">
         
-        <form method="POST" action="{{ url('/guardar-perfil') }}">
+        @if ($errors->any())
+            <div class="alert alert-danger mb-4">
+                <h5 class="alert-heading">¡Ups! Hubo un problema:</h5>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('perfil.update') }}" enctype="multipart/form-data">
             @csrf 
-            @method('PUT') <div class="row g-4">
+            @method('PUT') 
+            <div class="row g-4">
                 <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" value="Fanny" name="nombre">
+                    <input type="text" class="form-control" value="{{ old('nombre', $usuario->nombre) }}" name="nombre">
                 </div>
                 <div class="col-md-6">
                     <label>Apellido</label>
-                    <input type="text" class="form-control" value="Alegría" name="apellido">
+                    <input type="text" class="form-control" value="{{ old('apellido', $usuario->apellido) }}" name="apellido">
                 </div>
                 <div class="col-md-6">
                     <label>Correo electrónico</label>
-                    <input type="email" class="form-control" value="fanny@example.com" name="correo">
+                    <input type="email" class="form-control" value="{{ old('correo', $usuario->correo) }}" name="correo">
                 </div>
                 <div class="col-md-6">
                     <label>Departamento</label>
-                    <input type="text" class="form-control" value="Soporte Técnico" name="departamento" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->departamento->nombre_departamento }}" name="departamento" readonly>
                 </div>
                 <div class="col-md-6">
                     <label>Puesto</label>
-                    <input type="text" class="form-control" value="Usuario" name="puesto" readonly>
+                    <input type="text" class="form-control" value="{{ $usuario->puesto }}" name="puesto" readonly>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="foto_perfil">Cambiar foto de perfil (JPG, PNG)</label>
+                    <input type="file" class="form-control" id="foto_perfil" name="foto_perfil" accept=".jpg,.jpeg,.png">
                 </div>
             </div>
 
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-editar">Guardar Cambios</button>
                 
-                <a href="{{ url('perfil') }}" class="btn btn-cancelar ms-2">Cancelar</a>
+                <a href="{{ route('perfil') }}" class="btn btn-cancelar ms-2">Cancelar</a>
             </div>
         </form>
     </div>

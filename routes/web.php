@@ -23,9 +23,15 @@ Route::get('/logout', function () {
 
 Route::get('/perfil', [PerfilController::class, 'show'])->middleware('auth')->name('perfil');
 
-Route::get('/perfil/editar', function () {
-    return view('editar-perfil');
-})->name('perfil.editar');
+// MODIFICADO: Apunta al método 'edit' del controlador
+Route::get('/perfil/editar', [PerfilController::class, 'edit'])
+    ->middleware('auth')
+    ->name('perfil.editar');
+
+// NUEVO: Ruta para procesar el formulario de actualización
+Route::put('/guardar-perfil', [PerfilController::class, 'update'])
+    ->middleware('auth')
+    ->name('perfil.update');
 
 
 // Rutas de tickets---------------------------------------------------
