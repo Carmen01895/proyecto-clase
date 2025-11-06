@@ -46,11 +46,10 @@ Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->nam
 
 //Rutas de registro---------------------------------------------------
 
-Route::middleware(['auth'])->group(function () {
+
     
 
     Route::get('/registro', [UserController::class, 'index'])->name('gestion'); 
 
    
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
-});
