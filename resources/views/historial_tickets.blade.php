@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -212,10 +215,12 @@
     <div class="panel-header">
         <h2>Mis Tickets</h2>
         <p>Visualiza el historial y estado de tus tickets</p>
-        @if($usuario && $usuario->foto)
-            <img src="{{ asset('storage/' . $usuario->foto) }}" alt="Foto de perfil" class="foto-perfil">
+        @if($usuario && $usuario->foto_perfil)
+            <img src="{{ Storage::url($usuario->foto_perfil) }}" alt="Foto de perfil" class="foto-perfil">
         @else
-            <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+            <div class="foto-perfil d-flex align-items-center justify-content-center" style="background-color: #4e73df; color: white; font-size: 32px; font-weight: 600;">
+                {{ strtoupper(substr($usuario->nombre ?? 'U', 0, 1)) }}
+            </div>
         @endif
     </div>
 
