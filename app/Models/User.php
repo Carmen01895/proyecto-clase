@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Departamento;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -54,5 +55,11 @@ class User extends Authenticatable
     {
         
        return $this->belongsTo(Departamento::class, 'id_departamento', 'id_departamento');
+    }
+
+    public function rol()
+    {
+        
+       return $this->belongsTo(Role::class, 'id_rol', 'id_rol');
     }
 }

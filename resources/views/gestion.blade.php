@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios | Sistema de Tickets - Dulces Ricos</title>
 
-    <!-- Bootstrap y fuente -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -78,59 +77,95 @@
 
     <div class="usuarios-body">
         <h4 class="mb-4">Registrar nuevo usuario</h4>
-        <form id="formUsuario">
-            <div class="row g-4">
+
+        {{-- 1. BLOQUE PARA MOSTRAR MENSAJES DE ÉXITO (del controlador) --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        
+        {{-- 2. BLOQUE PARA MOSTRAR ERRORES DE VALIDACIÓN (automático de Laravel) --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                **Por favor, corrige los siguientes errores en el formulario:**
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- FORMULARIO MODIFICADO --}}
+        <form id="formUsuario" method="POST" action="{{ route('usuarios.store') }}" enctype="multipart/form-data">
+            @csrf <div class="row g-4">
                 <div class="col-md-6">
-                    <label>Nombre completo</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ej. Ana Martínez">
+                    <label>Nombre(s)</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Ana" value="{{ old('nombre') }}">
                     <small class="error" id="errorNombre"></small>
                 </div>
 
                 <div class="col-md-6">
+                    <label>Apellido(s)</label>
+                    <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Ej. Martínez" value="{{ old('apellido') }}">
+                    <small class="error" id="errorApellido"></small>
+                </div>
+
+                <div class="col-md-6">
                     <label>Correo electrónico</label>
-                    <input type="email" id="correo" class="form-control" placeholder="Ej. ana@example.com">
+                    <input type="email" id="correo" name="email" class="form-control" placeholder="Ej. ana@example.com" value="{{ old('email') }}">
                     <small class="error" id="errorCorreo"></small>
                 </div>
 
                 <div class="col-md-6">
                     <label>Contraseña</label>
-                    <input type="password" id="password" class="form-control" placeholder="Mínimo 6 caracteres">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres">
                     <small class="error" id="errorPassword"></small>
                 </div>
 
                 <div class="col-md-6">
-                    <label>Teléfono</label>
-                    <input type="text" id="telefono" class="form-control" placeholder="Ej. 5512345678">
-                    <small class="error" id="errorTelefono"></small>
-                </div>
-
-                <div class="col-md-6">
                     <label>Rol</label>
-                    <select id="rol" class="form-select">
+                    <select id="rol" name="id_rol" class="form-select">
                         <option value="">Seleccionar...</option>
-                        <option>Empleado</option>
-                        <option>Supervisor</option>
-                        <option>Jefe</option>
+                        {{-- Usando los IDs de rol de tu conversación anterior: 1=Admin, 2=Jefe, 3=Empleado --}}
+                        <option value="3" {{ old('id_rol') == '3' ? 'selected' : '' }}>Empleado</option>
+                        <option value="2" {{ old('id_rol') == '2' ? 'selected' : '' }}>Jefe</option>
+                        <option value="1" {{ old('id_rol') == '1' ? 'selected' : '' }}>Administrador</option>
                     </select>
                     <small class="error" id="errorRol"></small>
                 </div>
 
                 <div class="col-md-6">
+                    <label>Puesto</label>
+                    <input type="text" id="puesto" name="puesto" class="form-control" placeholder="Ej. Desarrollador Senior" value="{{ old('puesto') }}">
+                    <small class="error" id="errorPuesto"></small>
+                </div>
+                
+                <div class="col-md-6">
                     <label>Departamento</label>
-                    <select id="departamento" class="form-select">
+                    <select id="departamento" name="id_departamento" class="form-select">
                         <option value="">Seleccionar...</option>
-                        <option>Soporte Técnico</option>
-                        <option>Ventas</option>
-                        <option>Producción</option>
-                        <option>Administración</option>
+                        {{-- IDs de ejemplo, ajusta estos a tu tabla 'departamentos' --}}
+                        <option value="1" {{ old('id_departamento') == '1' ? 'selected' : '' }}>Soporte Técnico</option>
+                        <option value="2" {{ old('id_departamento') == '2' ? 'selected' : '' }}>Ventas</option>
+                        <option value="3" {{ old('id_departamento') == '3' ? 'selected' : '' }}>Producción</option>
+                        <option value="4" {{ old('id_departamento') == '4' ? 'selected' : '' }}>Administración</option>
                     </select>
                     <small class="error" id="errorDepartamento"></small>
                 </div>
+
+                <div class="col-md-6">
+                    <label>Foto de Perfil (Opcional)</label>
+                    <input type="file" id="fotoPerfil" name="foto" class="form-control">
+                    <small class="text-muted">Formatos: JPG, PNG, máx. 2MB</small>
+                </div>
+                
             </div>
 
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-guardar px-4">Guardar Usuario</button>
-                <button type="reset" class="btn btn-outline-secondary px-4 ms-2">Limpiar</button>
             </div>
         </form>
 
@@ -145,89 +180,53 @@
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Rol</th>
-                        <th>Departamento</th>
+                        <th>Puesto</th> <th>Departamento</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaUsuarios">
+                {{-- 1. Verifica si la variable $usuarios contiene datos --}}
+                @if (!empty($usuarios))
+                    
+                    {{-- 2. Itera sobre cada usuario devuelto por el controlador --}}
+                    @foreach ($usuarios as $usuario)
+                        <tr>
+                            <td>{{ $usuario->id_usuario }}</td> 
+                            <td>{{ $usuario->nombre }} {{ $usuario->apellido }}</td> 
+                            <td>{{ $usuario->correo }}</td>
+                            
+                            {{-- Muestra el NOMBRE DEL ROL usando la relación rol() --}}
+                            <td>{{ $usuario->rol?->nombre_rol ?? 'N/A' }}</td> 
+                            
+                            <td>{{ $usuario->puesto }}</td> 
+                            
+                            {{-- Muestra el NOMBRE DEL DEPARTAMENTO usando la relación departamento() --}}
+                            <td>{{ $usuario->departamento?->nombre_departamento ?? 'N/A' }}</td> 
+                            
+                            <td>
+                                <button class="btn btn-sm btn-info text-white me-1">Editar</button> 
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+                    @endforeach
+                
+                {{-- Si no hay usuarios en la base de datos, muestra un mensaje --}}
+                @else
                     <tr>
-                        <td>1</td>
-                        <td>Ana Martínez</td>
-                        <td>ana@example.com</td>
-                        <td>Empleado</td>
-                        <td>Ventas</td>
-                        <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
+                        <td colspan="7" class="text-center">No hay usuarios registrados.</td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Carlos Ruiz</td>
-                        <td>carlos@example.com</td>
-                        <td>Supervisor</td>
-                        <td>Producción</td>
-                        <td><button class="btn btn-sm btn-danger">Eliminar</button></td>
-                    </tr>
-                </tbody>
+                @endif
+            </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<footer>
+    Sistema de Tickets &copy; 2023 Dulces Ricos.
+</footer>
 
-
-<script>
-document.getElementById("formUsuario").addEventListener("submit", function(e){
-    e.preventDefault();
-
-    let valido = true;
-
-    // Limpiar errores previos
-    document.querySelectorAll(".error").forEach(e => e.textContent = "");
-
-    const nombre = document.getElementById("nombre").value.trim();
-    const correo = document.getElementById("correo").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const telefono = document.getElementById("telefono").value.trim();
-    const rol = document.getElementById("rol").value;
-    const departamento = document.getElementById("departamento").value;
-
-    if(nombre === ""){
-        document.getElementById("errorNombre").textContent = "El nombre es obligatorio.";
-        valido = false;
-    }
-
-    const regexCorreo = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-    if(!regexCorreo.test(correo)){
-        document.getElementById("errorCorreo").textContent = "Correo no válido.";
-        valido = false;
-    }
-
-    if(password.length < 6){
-        document.getElementById("errorPassword").textContent = "Debe tener al menos 6 caracteres.";
-        valido = false;
-    }
-
-    const regexTel = /^[0-9]{10}$/;
-    if(!regexTel.test(telefono)){
-        document.getElementById("errorTelefono").textContent = "Teléfono no válido (10 dígitos).";
-        valido = false;
-    }
-
-    if(rol === ""){
-        document.getElementById("errorRol").textContent = "Selecciona un rol.";
-        valido = false;
-    }
-
-    if(departamento === ""){
-        document.getElementById("errorDepartamento").textContent = "Selecciona un departamento.";
-        valido = false;
-    }
-
-    if(valido){
-        alert("Usuario registrado correctamente (simulado)");
-        document.getElementById("formUsuario").reset();
-    }
-});
-</script>
-
+{{-- SE ELIMINA LA VALIDACIÓN DE JAVASCRIPT --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\UserController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -43,6 +44,12 @@ Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets
 Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
 
 //Rutas de registro---------------------------------------------------
-Route::get('/registro', function () {
-    return view('gestion');
-})->name('gestion');
+
+Route::middleware(['auth'])->group(function () {
+    
+
+    Route::get('/registro', [UserController::class, 'index'])->name('gestion'); 
+
+   
+    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
+});

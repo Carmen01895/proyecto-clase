@@ -35,8 +35,8 @@ class LoginController extends Controller
                     return redirect()->intended(route('tickets.historial'));
                 //case $rol_jefe:
                     //return redirect()->intended('/jefe/dashboard');
-                //case $rol_admin:
-                    //return redirect()->intended('/admin/dashboard');
+                case $rol_admin:
+                    return redirect()->intended('/registro');
                 default:
                     Auth::logout();
                     return back()->withErrors([
