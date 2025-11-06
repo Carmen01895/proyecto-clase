@@ -121,15 +121,15 @@
             <div class="row g-4">
                 <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" value="{{ old('nombre', $usuario->nombre) }}" name="nombre">
+                    <input type="text" class="form-control" value="{{ old('nombre', $usuario->nombre) }}" name="nombre" minlength="8" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
                 </div>
                 <div class="col-md-6">
                     <label>Apellido</label>
-                    <input type="text" class="form-control" value="{{ old('apellido', $usuario->apellido) }}" name="apellido">
+                    <input type="text" class="form-control" value="{{ old('apellido', $usuario->apellido) }}" name="apellido" minlength="8" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
                 </div>
                 <div class="col-md-6">
                     <label>Correo electrónico</label>
-                    <input type="email" class="form-control" value="{{ old('correo', $usuario->correo) }}" name="correo">
+                    <input type="email" class="form-control" value="{{ old('correo', $usuario->correo) }}" name="correo" minlength="8" maxlength="100">
                 </div>
                 <div class="col-md-6">
                     <label>Departamento</label>
