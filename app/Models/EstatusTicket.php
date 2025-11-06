@@ -13,4 +13,16 @@ class EstatusTicket extends Model
     protected $primaryKey = 'id_estatus';
 
     protected $fillable = ['nombre_estatus'];
+
+    // Accessor para compatibilidad - permite usar $estatus->nombre
+    public function getNombreAttribute()
+    {
+        return $this->nombre_estatus;
+    }
+
+    // Relación con tickets
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'id_estatus', 'id_estatus');
+    }
 }

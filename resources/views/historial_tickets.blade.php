@@ -83,6 +83,32 @@
             border: 1px solid #f5c6cb;
         }
 
+        .btn-buscar {
+            background-color: #1cc88a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-buscar:hover {
+            background-color: #17a673;
+        }
+
+        .btn-limpiar {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-limpiar:hover {
+            background-color: #5a6268;
+        }
+
         .estado-pendiente {
             background-color: #fcefc7;
             color: #946c00;
@@ -165,56 +191,48 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+
+        .filtro-separado {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .filtro-separado:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
     </style>
 </head>
 <body>
 <x-navbar />
 
-<?php
-// Función para obtener la clase CSS según el estado
-function obtenerClaseEstado($estado) {
-    switch($estado) {
-        case 'pendiente': return 'estado-pendiente';
-        case 'proceso': return 'estado-proceso';
-        case 'resuelto': return 'estado-resuelto';
-        case 'cancelado': return 'estado-cancelado';
-        default: return 'estado-pendiente';
-    }
-}
-
-// Función para obtener el texto del estado
-function obtenerTextoEstado($estado) {
-    switch($estado) {
-        case 'pendiente': return 'Pendiente';
-        case 'proceso': return 'En proceso';
-        case 'resuelto': return 'Resuelto';
-        case 'cancelado': return 'Cancelado';
-        default: return 'Pendiente';
-    }
-}
-
-// Procesar cancelación de ticket si se envió el formulario
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_ticket'])) {
-    $ticket_id = $_POST['ticket_id'];
-    // Aquí iría la lógica para actualizar el estado en la base de datos
-    $mensaje = "El ticket $ticket_id ha sido cancelado exitosamente.";
-}
-?>
-
 <div class="panel-card">
     <div class="panel-header">
         <h2>Mis Tickets</h2>
         <p>Visualiza el historial y estado de tus tickets</p>
-        <img src="images/perfil.jpg" alt="Foto de perfil" class="foto-perfil">
+        @if($usuario && $usuario->foto)
+            <img src="{{ asset('storage/' . $usuario->foto) }}" alt="Foto de perfil" class="foto-perfil">
+        @else
+            <img src="{{ asset('images/perfil.jpg') }}" alt="Foto de perfil" class="foto-perfil">
+        @endif
     </div>
 
     <div class="panel-body">
-        <?php if (isset($mensaje)): ?>
+        @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?php echo $mensaje; ?>
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        <?php endif; ?>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">Listado de Tickets</h4>
@@ -223,35 +241,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_ticket'])) {
             </a>
         </div>
 
-        <!-- Filtros -->
+        <!-- Filtros Separados -->
         <div class="filtros">
-            <form method="GET" action="">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Filtrar por estado:</label>
+            <!-- Filtro por Estado (se aplica automáticamente) -->
+            <div class="filtro-separado">
+                <form method="GET" action="{{ route('tickets.historial') }}" class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <label class="form-label"><strong>Filtrar por estado:</strong></label>
                         <select class="form-select" name="filtro_estado" onchange="this.form.submit()">
-                            <option value="todos" <?php echo (!isset($_GET['filtro_estado']) || $_GET['filtro_estado'] == 'todos') ? 'selected' : ''; ?>>Todos los estados</option>
-                            <option value="pendiente" <?php echo (isset($_GET['filtro_estado']) && $_GET['filtro_estado'] == 'pendiente') ? 'selected' : ''; ?>>Pendiente</option>
-                            <option value="proceso" <?php echo (isset($_GET['filtro_estado']) && $_GET['filtro_estado'] == 'proceso') ? 'selected' : ''; ?>>En proceso</option>
-                            <option value="resuelto" <?php echo (isset($_GET['filtro_estado']) && $_GET['filtro_estado'] == 'resuelto') ? 'selected' : ''; ?>>Resuelto</option>
-                            <option value="cancelado" <?php echo (isset($_GET['filtro_estado']) && $_GET['filtro_estado'] == 'cancelado') ? 'selected' : ''; ?>>Cancelado</option>
+                            <option value="todos" {{ request('filtro_estado', 'todos') == 'todos' ? 'selected' : '' }}>Todos los estados</option>
+                            <option value="pendiente" {{ request('filtro_estado') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                            <option value="proceso" {{ request('filtro_estado') == 'proceso' ? 'selected' : '' }}>En proceso</option>
+                            <option value="resuelto" {{ request('filtro_estado') == 'resuelto' ? 'selected' : '' }}>Resuelto</option>
+                            <option value="cancelado" {{ request('filtro_estado') == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Buscar por ID:</label>
-                        <input type="text" class="form-control" name="buscar_id" placeholder="Ej: TKT-001" value="<?php echo isset($_GET['buscar_id']) ? htmlspecialchars($_GET['buscar_id']) : ''; ?>">
+                        <div class="form-text">Se aplica automáticamente al seleccionar</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Ordenar por:</label>
+                </form>
+            </div>
+
+            <!-- Ordenar por (se aplica automáticamente) -->
+            <div class="filtro-separado">
+                <form method="GET" action="{{ route('tickets.historial') }}" class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <label class="form-label"><strong>Ordenar por:</strong></label>
                         <select class="form-select" name="ordenar_por" onchange="this.form.submit()">
-                            <option value="fecha-desc" <?php echo (!isset($_GET['ordenar_por']) || $_GET['ordenar_por'] == 'fecha-desc') ? 'selected' : ''; ?>>Fecha (más reciente)</option>
-                            <option value="fecha-asc" <?php echo (isset($_GET['ordenar_por']) && $_GET['ordenar_por'] == 'fecha-asc') ? 'selected' : ''; ?>>Fecha (más antigua)</option>
-                            <option value="estado" <?php echo (isset($_GET['ordenar_por']) && $_GET['ordenar_por'] == 'estado') ? 'selected' : ''; ?>>Estado</option>
+                            <option value="fecha-desc" {{ request('ordenar_por', 'fecha-desc') == 'fecha-desc' ? 'selected' : '' }}>Fecha (más reciente primero)</option>
+                            <option value="fecha-asc" {{ request('ordenar_por') == 'fecha-asc' ? 'selected' : '' }}>Fecha (más antiguo primero)</option>
+                            <option value="estado" {{ request('ordenar_por') == 'estado' ? 'selected' : '' }}>Estado</option>
                         </select>
                     </div>
-                </div>
-            </form>
+                    <div class="col-md-4">
+                        <div class="form-text">Se aplica automáticamente al seleccionar</div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Buscar por ID (con botón) -->
+            <div class="filtro-separado">
+                <form method="GET" action="{{ route('tickets.historial') }}" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Buscar por ID de ticket:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="buscar_id" placeholder="Ej: 1, 2, 3..." value="{{ request('buscar_id') }}">
+                            <button type="submit" class="btn btn-buscar">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-text">Ingresa el número específico del ticket</div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Botón Limpiar Filtros -->
+            <div class="text-center mt-3">
+                <a href="{{ route('tickets.historial') }}" class="btn btn-limpiar">
+                    <i class="bi bi-arrow-clockwise"></i> Limpiar Todos los Filtros
+                </a>
+            </div>
         </div>
+
+        <!-- Información de filtros aplicados -->
+        @if(request()->has('filtro_estado') && request('filtro_estado') != 'todos' || request()->has('buscar_id'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>Filtros aplicados:</strong>
+            @if(request()->has('filtro_estado') && request('filtro_estado') != 'todos')
+                <span class="badge bg-primary">Estado: {{ ucfirst(request('filtro_estado')) }}</span>
+            @endif
+            @if(request()->has('buscar_id') && request('buscar_id'))
+                <span class="badge bg-success">ID: {{ request('buscar_id') }}</span>
+            @endif
+            @if(request()->has('ordenar_por') && request('ordenar_por') != 'fecha-desc')
+                <span class="badge bg-secondary">Orden: 
+                    @if(request('ordenar_por') == 'fecha-asc') Más antiguo primero
+                    @elseif(request('ordenar_por') == 'estado') Por estado
+                    @endif
+                </span>
+            @endif
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
 
         <!-- Tabla de tickets -->
         <div class="table-responsive">
@@ -267,28 +340,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_ticket'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Los tickets se cargarán aquí dinámicamente desde la base de datos -->
+                    @forelse($tickets as $ticket)
+                    <tr>
+                        <td>
+                            <span class="badge-ticket">#{{ $ticket->id_ticket }}</span>
+                        </td>
+                        <td>{{ $ticket->fecha_creacion->format('d/m/Y H:i') }}</td>
+                        <td>
+                            <strong>{{ $ticket->titulo }}</strong><br>
+                            <small class="text-muted">{{ Str::limit($ticket->description, 50) }}</small>
+                        </td>
+                        <td>
+                            @if($ticket->asignado)
+                                {{ $ticket->asignado->nombre }}
+                            @else
+                                <span class="text-muted">No asignado</span>
+                            @endif
+                        </td>
+                        <td>
+                            @php
+                                $estadoClass = 'estado-pendiente';
+                                $estadoText = 'Pendiente';
+                                
+                                if($ticket->estatus) {
+                                    switch($ticket->estatus->nombre_estatus) {
+                                        case 'pendiente': 
+                                            $estadoClass = 'estado-pendiente';
+                                            $estadoText = 'Pendiente';
+                                            break;
+                                        case 'proceso': 
+                                            $estadoClass = 'estado-proceso';
+                                            $estadoText = 'En proceso';
+                                            break;
+                                        case 'resuelto': 
+                                            $estadoClass = 'estado-resuelto';
+                                            $estadoText = 'Resuelto';
+                                            break;
+                                        case 'cancelado': 
+                                            $estadoClass = 'estado-cancelado';
+                                            $estadoText = 'Cancelado';
+                                            break;
+                                    }
+                                }
+                            @endphp
+                            <span class="{{ $estadoClass }}">{{ $estadoText }}</span>
+                        </td>
+                        <td>
+                            @if($ticket->estatus && $ticket->estatus->nombre_estatus == 'pendiente')
+                                <form action="{{ route('tickets.cancelar', $ticket->id_ticket) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-cancelar btn-sm" 
+                                            onclick="return confirm('¿Estás seguro de que deseas cancelar este ticket?')">
+                                        Cancelar
+                                    </button>
+                                </form>
+                            @else
+                                <button class="btn btn-cancelar btn-sm" disabled>Cancelar</button>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                                @if(request()->has('filtro_estado') && request('filtro_estado') != 'todos' || request()->has('buscar_id'))
+                                    No se encontraron tickets con los filtros aplicados
+                                @else
+                                    No se encontraron tickets
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <!-- Paginación -->
+        @if($tickets->hasPages())
         <nav aria-label="Navegación de páginas">
             <ul class="pagination justify-content-center mt-4">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Siguiente</a>
-                </li>
+                {{ $tickets->appends(request()->query())->links() }}
             </ul>
         </nav>
+        @endif
     </div>
 </div>
-
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

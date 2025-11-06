@@ -36,12 +36,13 @@ Route::put('/guardar-perfil', [PerfilController::class, 'update'])
 
 
 // Rutas de tickets---------------------------------------------------
-Route::get('/tickets', function () {
-    return view('historial_tickets');
-})->name('tickets.historial');
+Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.historial');
 
 Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');
 Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+
+// Agregar esta ruta para cancelar tickets
+Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->name('tickets.cancelar');
 
 //Rutas de registro---------------------------------------------------
 
