@@ -32,10 +32,6 @@ body {
     padding: 40px 60px 50px;
 }
 
-.form-group {
-    margin-bottom: 22px;
-}
-
 label {
     font-weight: 600;
     color: #444;
@@ -56,22 +52,13 @@ textarea {
     outline: none;
     transition: all 0.2s ease;
 }
-input[readonly] {
-    background-color: #f7f7f7;
-    color: #555;
-}
+
 input:focus,
 select:focus,
 textarea:focus {
     background-color: #fff;
     border-color: #4e73df;
     box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
-}
-.form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 35px;
 }
 
 button {
@@ -83,6 +70,7 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .btn-enviar {
     background-color: #1cc88a;
     color: white;
@@ -91,12 +79,12 @@ button {
 .btn-enviar:hover {
     background-color: #17a673;
 }
+
 .btn-cancelar {
     display: inline-block;
     padding: 10px 20px;
     background-color: #e0e0e0;
     color: #333;
-    border: none;
     border-radius: 5px;
     text-decoration: none;
     font-weight: 500;
@@ -108,15 +96,107 @@ button {
     color: #000;
 }
 
-/* Responsivo */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table th,
+.table td {
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.table tbody tr:hover {
+    background-color: #eef3ff;
+}
+
+.table td form select {
+    width: 170px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    font-size: 0.85rem;
+}
+
+.table td form select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
+}
+
+.table td form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.table td form .btn-enviar {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+}
+
+.pagination {
+    justify-content: center !important;
+    margin-top: 20px;
+}
+
+.page-link {
+    padding: 6px 10px !important;
+    font-size: 0.85rem !important;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+    min-width: 32px;
+    text-align: center;
+    color: #4e73df !important;
+}
+
+.page-item .page-link span[aria-hidden="true"] {
+    font-size: 0.80rem !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+}
+
+.page-link:hover {
+    background-color: #e8edff !important;
+}
+
+.page-item.active .page-link {
+    background-color: #4e73df !important;
+    border-color: #4e73df !important;
+    color: white !important;
+}
+
+.ticket-body form select,
+.ticket-body form input[type="date"] {
+    height: 42px;
+    font-size: 0.9rem;
+    padding: 8px 10px;
+}
+
+.ticket-body label {
+    font-size: 0.9rem;
+}
+
 @media (max-width: 700px) {
     .ticket-body {
         padding: 30px 25px;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-        align-items: stretch;
     }
 
     button {
@@ -126,4 +206,28 @@ button {
     .ticket-header h2 {
         font-size: 1.6rem;
     }
+}
+
+@media (max-width: 768px) {
+    .table td form {
+        flex-direction: column;
+    }
+
+    .table td form select,
+    .table td form .btn-enviar {
+        width: 100%;
+    }
+
+    .table thead {
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+}
+.container {
+    max-width: 1250px;
 }

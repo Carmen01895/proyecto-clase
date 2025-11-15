@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GestionTicketsController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -53,3 +54,11 @@ Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->nam
 
    
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
+
+
+//Rutas de visualización de tickets y asignación x parte del jefe
+
+Route::get('/gestion-tickets', [GestionTicketsController::class, 'index'])->name('gestion.tickets');
+Route::post('/gestion-tickets/asignar/{id}', [GestionTicketsController::class, 'asignar'])->name('gestion.asignar');
+Route::put('/gestion-tickets/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])->name('gestion.cancelar');
+

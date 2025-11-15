@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\GestionTicket;
 
 class EstatusTicket extends Model
 {
@@ -24,5 +25,11 @@ class EstatusTicket extends Model
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'id_estatus', 'id_estatus');
+    }
+
+    //Relación con el jefe
+    public function gestionTickets()
+    {
+        return $this->hasMany(GestionTicket::class, 'id_estatus', 'id_estatus');
     }
 }
