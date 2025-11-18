@@ -58,7 +58,17 @@ Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->nam
 
 //Rutas de visualización de tickets y asignación x parte del jefe
 
-Route::get('/gestion-tickets', [GestionTicketsController::class, 'index'])->name('gestion.tickets');
-Route::post('/gestion-tickets/asignar/{id}', [GestionTicketsController::class, 'asignar'])->name('gestion.asignar');
-Route::put('/gestion-tickets/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])->name('gestion.cancelar');
+Route::prefix('admin/gestion/ticket')->group(function () {
+
+    Route::get('/', [GestionTicketsController::class, 'index'])
+        ->name('gestion.tickets');
+
+    Route::post('/asignar/{id}', [GestionTicketsController::class, 'asignar'])
+        ->name('gestion.asignar');
+
+    Route::put('/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])
+        ->name('gestion.cancelar');
+
+});
+
 
