@@ -78,9 +78,11 @@ class UserController extends Controller
         $usuarios = User::with(['rol', 'departamento'])
                         ->where('activo', 1)
                         ->get();
+        
+        $departamentos = Departamento::all();
 
 
-        return view('gestion', compact('usuarios', 'usuario_editar'));
+        return view('gestion', compact('usuarios', 'usuario_editar', 'departamentos'));
     }
 
     public function update(Request $request, $id)
@@ -138,4 +140,3 @@ class UserController extends Controller
         return redirect()->route('gestion')->with('success', 'Usuario eliminado de la lista.');
     }
 }
-

@@ -172,30 +172,24 @@
                     <small class="error" id="errorPuesto"></small>
                 </div>
                 
-                <<div class="col-md-6">
+                <div class="col-md-6">
                     <label>Departamento</label>
                     <select id="departamento" name="id_departamento" class="form-select">
                         <option value="">Seleccionar...</option>
-                        
-                        {{-- ESTE BUCLE CREA LA LISTA AUTOMÁTICAMENTE --}}
+                        {{-- Este bucle crea la lista automáticamente --}}
                         @foreach($departamentos as $depto)
-                            <option value="{{ $depto->id_departamento }}" 
-                                {{-- Esto mantiene la selección si hay error o estás editando --}}
+                            <option value="{{ $depto->id_departamento }}"
+
                                 {{ old('id_departamento', $usuario_editar->id_departamento ?? '') == $depto->id_departamento ? 'selected' : '' }}>
-                                
                                 {{ $depto->nombre_departamento }}
-                            
                             </option>
                         @endforeach
-
                     </select>
                 </div>
 
                 <div class="col-md-6">
                     <label>Foto de Perfil (Opcional)</label>
                     <input type="file" id="fotoPerfil" name="foto" class="form-control">
-                    
-                    {{-- Si hay foto actual, mostramos un aviso --}}
                     @if(isset($usuario_editar) && $usuario_editar->foto_perfil)
                         <small class="text-success">Actualmente tienes una foto cargada.</small>
                     @else
