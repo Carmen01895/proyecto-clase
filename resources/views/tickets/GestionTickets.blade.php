@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<x-navbar />
+
 <div class="ticket-header">
     <h2>Gestión de Tickets</h2>
 </div>

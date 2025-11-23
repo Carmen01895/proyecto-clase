@@ -14,61 +14,59 @@ Route::get('/', function () {
 })->name('login');
 
 Route::post('/', [LoginController::class, 'authenticate'])->name('login.post');
-Route::middleware(['auth','role:3'])->prefix('empleado')->group(function(){});
 
-Route::get('/logout', function () {
-    Auth::logout();
-    return redirect('/');
-})->name('logout');
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Rutas de perfil----------------------------------------------------
+//VISTAS UNIVERSALES ----------------------------------------------------
 
-Route::get('/perfil', [PerfilController::class, 'show'])->middleware('auth')->name('perfil');
+Route::middleware(['auth'])->group(function () {
+    //perfil de usuario
+    Route::get('/perfil', [PerfilController::class, 'show'])->middleware('auth')->name('perfil');
 
-// MODIFICADO: Apunta al método 'edit' del controlador
-Route::get('/perfil/editar', [PerfilController::class, 'edit'])
-    ->middleware('auth')
-    ->name('perfil.editar');
+    Route::get('/perfil/editar', [PerfilController::class, 'edit'])
+        ->middleware('auth')
+        ->name('perfil.editar');
 
-// NUEVO: Ruta para procesar el formulario de actualización
-Route::put('/guardar-perfil', [PerfilController::class, 'update'])
-    ->middleware('auth')
-    ->name('perfil.update');
-
-
-// Rutas de tickets---------------------------------------------------
-Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.historial');
-
-Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');
-Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-
-// Agregar esta ruta para cancelar tickets
-Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->name('tickets.cancelar');
-
-//Rutas de registro---------------------------------------------------
-
-
-    
-
-    Route::get('/registro', [UserController::class, 'index'])->name('gestion'); 
-
-   
-    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
-
-
-//Rutas de visualización de tickets y asignación x parte del jefe
-
-Route::prefix('admin/gestion/ticket')->group(function () {
-
-    Route::get('/', [GestionTicketsController::class, 'index'])
-        ->name('gestion.tickets');
-
-    Route::post('/asignar/{id}', [GestionTicketsController::class, 'asignar'])
-        ->name('gestion.asignar');
-
-    Route::put('/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])
-        ->name('gestion.cancelar');
-
+    Route::put('/guardar-perfil', [PerfilController::class, 'update'])
+        ->middleware('auth')
+        ->name('perfil.update');
 });
 
+// RUTAS PARA EMPLEADO ----------------------------------------------------
 
+Route::middleware(['auth','role:3'])->prefix('empleado')->group(function(){
+
+    //tickets
+    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.historial');
+
+    Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->name('tickets.cancelar');
+
+});
+//RUTAS PARA JEFE---------------------------------------------------
+
+Route::middleware(['auth','role:2'])->group(function(){
+//Gestion de Usuarios
+    Route::get('/registro', [UserController::class, 'index'])->name('gestion'); 
+    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
+    Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
+    Route::put('/usuarios/{id}/desactivar', [UserController::class, 'desactivar'])->name('usuarios.desactivar');
+
+//Rutas de visualización de tickets y asignación
+    Route::prefix('jefe/gestion/ticket')->group(function () {
+
+        Route::get('/', [GestionTicketsController::class, 'index'])
+            ->name('gestion.tickets');
+
+        Route::post('/asignar/{id}', [GestionTicketsController::class, 'asignar'])
+            ->name('gestion.asignar');
+
+        Route::put('/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])
+            ->name('gestion.cancelar');
+
+    });
+});
+
+//RUTAS DEL ADMINISTRADOR (AUXILIAR)--------------------------------------------

@@ -60,9 +60,82 @@ class UserController extends Controller
      */
     public function index()
     {
-        $usuarios = User::with(['rol', 'departamento'])->get();
+        $usuarios = User::with(['rol', 'departamento'])
+            ->where('activo',1)
+            ->get();
         
-        // Retorna la vista 'gestion' y le pasa la colección de usuarios
-        return view('gestion', compact('usuarios'));
+        $departamentos = Departamento::all();
+
+        return view('gestion', compact('usuarios', 'departamentos'));
+    }
+
+    public function edit($id)
+    {
+
+        $usuario_editar = User::findOrFail($id);
+
+
+        $usuarios = User::with(['rol', 'departamento'])
+                        ->where('activo', 1)
+                        ->get();
+
+
+        return view('gestion', compact('usuarios', 'usuario_editar'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $usuario = User::findOrFail($id);
+
+  
+        $request->validate([
+            'nombre'          => 'required|string|max:100',
+            'apellido'        => 'required|string|max:100',
+            'email'           => 'required|email|max:255|unique:usuarios,correo,' . $id . ',id_usuario',
+            'puesto'          => 'required|string|max:100',
+            'id_rol'          => 'required',
+            'id_departamento' => 'required',
+            'foto'            => 'nullable|image|max:2048',
+
+            'password'        => 'nullable|string|min:6', 
+        ]);
+
+
+        $usuario->nombre = $request->nombre;
+        $usuario->apellido = $request->apellido;
+        $usuario->correo = $request->email;
+        $usuario->puesto = $request->puesto;
+        $usuario->id_rol = $request->id_rol;
+        $usuario->id_departamento = $request->id_departamento;
+
+        
+        if ($request->filled('password')) {
+            $usuario->password = Hash::make($request->password);
+        }
+
+       
+        if ($request->hasFile('foto')) {
+            // Opcional: Borrar foto anterior si existe
+            //if($usuario->foto_perfil) Storage::disk('public')->delete($usuario->foto_perfil);
+            
+            $usuario->foto_perfil = $request->file('foto')->store('perfiles', 'public');
+        }
+
+        $usuario->save();
+
+        return redirect()->route('gestion')->with('success', '¡Usuario actualizado correctamente!');
+    }
+
+
+    public function desactivar($id)
+    {
+        $usuario = User::findOrFail($id);
+        
+
+        $usuario->activo = 0; 
+        $usuario->save();
+
+        return redirect()->route('gestion')->with('success', 'Usuario eliminado de la lista.');
     }
 }
+

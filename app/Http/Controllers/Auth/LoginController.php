@@ -21,11 +21,13 @@ class LoginController extends Controller
         ]);
 
         $credentials = $request->only('correo', 'password');
+        $credentials['activo'] = 1; 
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
-
+            
+            //Roles
             $rol_empleado = 3;
             $rol_jefe = 2;
             $rol_admin = 1;
@@ -33,10 +35,13 @@ class LoginController extends Controller
             switch ($user->id_rol) {
                 case $rol_empleado:
                     return redirect()->intended(route('tickets.historial'));
-                //case $rol_jefe:
-                    //return redirect()->intended('/jefe/dashboard');
-                case $rol_admin:
-                    return redirect()->intended('/registro');
+
+                case $rol_jefe:
+                    return redirect()->intended('/jefe/gestion/ticket');
+
+                //case $rol_admin:
+                    //return redirect()->intended('/registro');
+
                 default:
                     Auth::logout();
                     return back()->withErrors([
@@ -45,7 +50,6 @@ class LoginController extends Controller
             }
         }
 
-        // Si la autenticación falla, devolver error
         return back()->withErrors([
             'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ])->onlyInput('correo');
