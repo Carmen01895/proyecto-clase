@@ -177,6 +177,19 @@
                 </div>
             </div>
 
+            <div class="col-md-6 d-flex align-items-center">
+                    <div class="mt-2">
+                        <label>Foto de perfil actual / Previsualización</label>
+                        <br>
+                        {{-- La imagen que se previsualizará o la actual --}}
+                        <img 
+                            id="foto-previsualizacion"
+                            src="{{ $usuario->foto_perfil ? asset('storage/' . $usuario->foto_perfil) : asset('img/default-avatar.png') }}"
+                            alt="Foto de Perfil"
+                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
+                    </div>
+                </div>
+
             <div class="text-center mt-5">
                 <button type="submit" class="btn btn-editar">Guardar Cambios</button>
                 
@@ -201,6 +214,29 @@
             eyeIcon.setAttribute('class', 'bi bi-eye-slash'); // Asume que tienes el ícono 'eye-slash'
         } else {
             eyeIcon.setAttribute('class', 'bi bi-eye');
+        }
+    });
+</script>
+<script>
+    // ----------------------------------------------------------------
+    // SCRIPT DE PREVISUALIZACIÓN DE IMAGEN
+    // ----------------------------------------------------------------
+    document.getElementById('foto_perfil').addEventListener('change', function(event) {
+        const input = event.target;
+        const reader = new FileReader();
+        const previewImage = document.getElementById('foto-previsualizacion');
+
+        if (input.files && input.files[0]) {
+            reader.onload = function(e) {
+                // Al cargar el archivo, se actualiza el atributo src de la imagen
+                previewImage.src = e.target.result;
+            }
+            // Lee el archivo como una URL de datos (Data URL)
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            // Si el usuario cancela la selección, se revierte a la foto actual (o por defecto)
+            const defaultSrc = previewImage.getAttribute('data-original-src') || "{{ $usuario->foto_perfil ? asset('storage/' . $usuario->foto_perfil) : asset('img/default-avatar.png') }}";
+            previewImage.src = defaultSrc;
         }
     });
 </script>
