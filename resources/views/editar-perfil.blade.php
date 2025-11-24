@@ -121,11 +121,11 @@
             <div class="row g-4">
                 <div class="col-md-6">
                     <label>Nombre</label>
-                    <input type="text" class="form-control" value="{{ old('nombre', $usuario->nombre) }}" name="nombre" minlength="8" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
+                    <input type="text" class="form-control" value="{{ old('nombre', $usuario->nombre) }}" name="nombre" minlength="3" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
                 </div>
                 <div class="col-md-6">
                     <label>Apellido</label>
-                    <input type="text" class="form-control" value="{{ old('apellido', $usuario->apellido) }}" name="apellido" minlength="8" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
+                    <input type="text" class="form-control" value="{{ old('apellido', $usuario->apellido) }}" name="apellido" minlength="3" maxlength="100" pattern="[A-Za-zñÑáéíóúÁÉÍÓÚüÜ ]+">
                 </div>
                 <div class="col-md-6">
                     <label>Correo electrónico</label>
@@ -138,6 +138,37 @@
                 <div class="col-md-6">
                     <label>Puesto</label>
                     <input type="text" class="form-control" value="{{ $usuario->puesto }}" name="puesto" readonly>
+                </div>
+                {{-- **INICIO: Campos de Contraseña para Edición** --}}
+                <div class="col-md-6">
+                    <label for="password">Nueva Contraseña</label>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            class="form-control @error('password') is-invalid @enderror" 
+                            id="password" 
+                            name="password" 
+                            minlength="6" 
+                            placeholder="Dejar en blanco para no cambiar">
+                        
+                        {{-- Botón para Mostrar/Ocultar Contraseña --}}
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Mostrar/Ocultar Contraseña">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.185 8a.987.987 0 0 1 0-.001C3.125 4.973 6.136 3.5 8 3.5s4.875 1.473 6.815 4.499a.987.987 0 0 1 0 .001C12.875 11.027 9.864 12.5 8 12.5s-4.875-1.473-6.815-4.499z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                            </svg>
+                        </button>
+                        {{-- Fin Botón --}}
+                        
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="password_confirmation">Confirmar Contraseña</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                 </div>
 
                 <div class="col-md-6">
@@ -154,5 +185,24 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        // Selecciona los campos de contraseña
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+        
+        // Alterna el tipo de input entre 'password' y 'text'
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // Opcional: Cambia el ícono del ojo para indicar el estado (abierto/cerrado)
+        if (type === 'text') {
+            eyeIcon.setAttribute('class', 'bi bi-eye-slash'); // Asume que tienes el ícono 'eye-slash'
+        } else {
+            eyeIcon.setAttribute('class', 'bi bi-eye');
+        }
+    });
+</script>
 </body>
 </html>

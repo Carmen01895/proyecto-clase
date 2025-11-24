@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class PerfilController extends Controller
 {
@@ -43,6 +44,7 @@ class PerfilController extends Controller
                 Rule::unique('users', 'email'),
             ],
             'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
         if ($request->hasFile('foto_perfil')) {
@@ -58,6 +60,11 @@ class PerfilController extends Controller
         $usuario->nombre = $validatedData['nombre'];
         $usuario->apellido = $validatedData['apellido'];
         $usuario->correo = $validatedData['correo'];
+
+        if (!empty($validatedData['password'])) {
+            // Hashear la nueva contraseña antes de guardar.
+            $usuario->password = Hash::make($validatedData['password']);
+        }
         
         $usuario->save();
 
