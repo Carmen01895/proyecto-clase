@@ -86,6 +86,25 @@
             border: 1px solid #f5c6cb;
         }
 
+        .btn-eliminar {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn-eliminar:hover {
+            background-color: #c82333;
+        }
+
+        .btn-eliminar:disabled {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .btn-buscar {
             background-color: #1cc88a;
             color: white;
@@ -206,6 +225,10 @@
             margin-bottom: 0;
             padding-bottom: 0;
         }
+
+        .d-flex.gap-1 {
+            gap: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -227,14 +250,14 @@
     <div class="panel-body">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
+                <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
+                <i class="bi bi-exclamation-triangle-fill"></i> {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -391,18 +414,33 @@
                             <span class="{{ $estadoClass }}">{{ $estadoText }}</span>
                         </td>
                         <td>
-                            @if($ticket->estatus && $ticket->estatus->nombre_estatus == 'pendiente')
-                                <form action="{{ route('tickets.cancelar', $ticket->id_ticket) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn btn-cancelar btn-sm" 
-                                            onclick="return confirm('¿Estás seguro de que deseas cancelar este ticket?')">
-                                        Cancelar
+                            <div class="d-flex gap-1">
+                                @if($ticket->estatus && $ticket->estatus->nombre_estatus == 'pendiente')
+                                    <form action="{{ route('tickets.cancelar', $ticket->id_ticket) }}" method="POST" class="me-1">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-cancelar btn-sm" 
+                                                onclick="return confirm('¿Estás seguro de que deseas cancelar este ticket?')">
+                                            <i class="bi bi-x-circle"></i> Cancelar
+                                        </button>
+                                    </form>
+                                @endif
+                                
+                                @if($ticket->estatus && in_array($ticket->estatus->nombre_estatus, ['resuelto', 'cancelado']))
+                                    <form action="{{ route('tickets.eliminar', $ticket->id_ticket) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-eliminar btn-sm" 
+                                                onclick="return confirm('¿Estás seguro de que deseas ELIMINAR permanentemente este ticket del historial?')">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn btn-eliminar btn-sm" disabled title="Solo se pueden eliminar tickets resueltos o cancelados">
+                                        <i class="bi bi-trash"></i> Eliminar
                                     </button>
-                                </form>
-                            @else
-                                <button class="btn btn-cancelar btn-sm" disabled>Cancelar</button>
-                            @endif
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -425,14 +463,70 @@
 
         <!-- Paginación -->
         @if($tickets->hasPages())
-        <nav aria-label="Navegación de páginas">
-            <ul class="pagination justify-content-center mt-4">
-                {{ $tickets->appends(request()->query())->links() }}
-            </ul>
-        </nav>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Mostrando {{ $tickets->firstItem() }} a {{ $tickets->lastItem() }} de {{ $tickets->total() }} resultados
+            </div>
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination mb-0">
+                    {{-- Previous Page Link --}}
+                    @if($tickets->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link">Atras</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $tickets->previousPageUrl() }}" rel="prev">Atras</a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach($tickets->getUrlRange(1, $tickets->lastPage()) as $page => $url)
+                        @if($page == $tickets->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if($tickets->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $tickets->nextPageUrl() }}" rel="Next">Siguiente</a>
+                        </li>
+                    @else
+                        <li class="page-item disabled">
+                            <span class="page-link">Siguiente</span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+        </div>
+        @else
+        <div class="text-center text-muted mt-4">
+            Mostrando {{ $tickets->count() }} de {{ $tickets->total() }} resultados
+        </div>
         @endif
+
+        <!-- Información sobre las acciones -->
+        <div class="alert alert-light mt-4" role="alert">
+            <h6><i class="bi bi-info-circle"></i> Información sobre las acciones:</h6>
+            <ul class="mb-0">
+                <li><strong>Cancelar:</strong> Solo disponible para tickets en estado "Pendiente"</li>
+                <li><strong>Eliminar:</strong> Solo disponible para tickets en estado "Resuelto" o "Cancelado"</li>
+                <li>Los tickets eliminados se borran permanentemente del historial</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<footer>
+    <p>&copy; {{ date('Y') }} Sistema de Tickets - Dulces Ricos. Todos los derechos reservados.</p>
+</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

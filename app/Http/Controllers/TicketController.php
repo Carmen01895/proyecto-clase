@@ -141,4 +141,37 @@ class TicketController extends Controller
             return redirect()->back()->with('error', 'Error al cancelar el ticket: ' . $e->getMessage());
         }
     }
+
+    /**
+    * Eliminar ticket del historial (solo para tickets resueltos o cancelados)
+    */
+    public function destroy($id)
+    {
+        try {
+            $ticket = Ticket::findOrFail($id);
+            
+            // Verificar que el ticket pertenece al usuario autenticado
+            if ($ticket->id_usuario !== Auth::id()) {
+                return redirect()->back()
+                    ->with('error', 'No tienes permiso para eliminar este ticket');
+            }
+            
+            // Verificar que el ticket esté resuelto o cancelado
+            if ($ticket->estatus && !in_array($ticket->estatus->nombre_estatus, ['resuelto', 'cancelado'])) {
+                return redirect()->back()
+                    ->with('error', 'Solo puedes eliminar tickets resueltos o cancelados');
+            }
+            
+            // Eliminar el ticket
+            $ticket->delete();
+            
+            return redirect()->route('tickets.historial')
+                ->with('success', 'Ticket eliminado del historial correctamente');
+                
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar ticket: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error al eliminar el ticket: ' . $e->getMessage());
+        }
+    }
 }

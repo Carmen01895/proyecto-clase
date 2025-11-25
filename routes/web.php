@@ -43,6 +43,7 @@ Route::middleware(['auth','role:3'])->prefix('empleado')->group(function(){
     Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
     Route::put('/tickets/{id}/cancelar', [TicketController::class, 'cancelar'])->name('tickets.cancelar');
+    Route::delete('/tickets/{id}/eliminar', [TicketController::class, 'destroy'])->name('tickets.eliminar');
 
 });
 //RUTAS PARA JEFE---------------------------------------------------
