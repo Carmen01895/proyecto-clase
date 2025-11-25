@@ -39,8 +39,8 @@ class LoginController extends Controller
                 case $rol_jefe:
                     return redirect()->intended('/jefe/gestion/ticket');
 
-                //case $rol_admin:
-                    //return redirect()->intended('/registro');
+                case $rol_admin:
+                    return redirect()->intended(route('auxiliar.tickets'));
 
                 default:
                     Auth::logout();

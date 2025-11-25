@@ -6,6 +6,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GestionTicketsController;
+use App\Http\Controllers\TicketDetallesController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -70,3 +71,18 @@ Route::middleware(['auth','role:2'])->group(function(){
 });
 
 //RUTAS DEL ADMINISTRADOR (AUXILIAR)--------------------------------------------
+
+Route::middleware(['auth','role:1'])->prefix('auxiliar')->group(function(){
+    
+    // Dashboard de tickets asignados al auxiliar
+    Route::get('/tickets', [TicketDetallesController::class, 'index'])
+        ->name('auxiliar.tickets');
+    
+    // Ver detalles de un ticket específico
+    Route::get('/tickets/{id}/detalles', [TicketDetallesController::class, 'show'])
+        ->name('auxiliar.tickets.detalles');
+    
+    // Actualizar el estado del ticket
+    Route::post('/tickets/{id}/actualizar', [TicketDetallesController::class, 'actualizar'])
+        ->name('auxiliar.tickets.actualizar');
+});
