@@ -81,9 +81,16 @@ class TicketController extends Controller
             $estatusPendiente = EstatusTicket::where('nombre_estatus', 'pendiente')->first();
 
             if (!$estatusPendiente) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Error: No existe el estado "pendiente". Por favor, ejecuta el seeder de estatus');
+                // Si no existe el estatus 'pendiente' intentamos crearlo para no bloquear la creación
+                try {
+                    $estatusPendiente = EstatusTicket::create(['nombre_estatus' => 'pendiente']);
+                    Log::warning('Estatus "pendiente" inexistente. Se creó automáticamente.');
+                } catch (\Exception $ex) {
+                    Log::error('No se pudo crear el estatus pendiente: ' . $ex->getMessage());
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'Error: No existe el estado "pendiente" y no se pudo crear automáticamente. Por favor, ejecuta el seeder de estatus');
+                }
             }
 
             $ticket = new Ticket();

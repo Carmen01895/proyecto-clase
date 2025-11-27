@@ -165,7 +165,7 @@
         <h2>Gestión de Usuarios</h2>
         <p>Administrar las cuentas de los empleados</p>
     </div>
-
+   
     <div class="usuarios-body">
         <h4 class="mb-4">
             {{ isset($usuario_editar) ? 'Editar Usuario: ' . $usuario_editar->nombre : 'Registrar nuevo usuario' }}

@@ -1,0 +1,448 @@
+[1mdiff --git a/app/Http/Controllers/DepartamentoController.php b/app/Http/Controllers/DepartamentoController.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..cab3b39[m
+[1m--- /dev/null[m
+[1m+++ b/app/Http/Controllers/DepartamentoController.php[m
+[36m@@ -0,0 +1,67 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Http\Controllers;[m
+[32m+[m
+[32m+[m[32muse Illuminate\Http\Request;[m
+[32m+[m[32muse App\Models\Departamento;[m
+[32m+[m[32muse App\Models\Ticket;[m
+[32m+[m
+[32m+[m[32mclass DepartamentoController extends Controller[m
+[32m+[m[32m{[m
+[32m+[m[32m    public function index()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $departamentos = Departamento::orderBy('nombre_departamento')->get();[m
+[32m+[m[32m        return view('departamentos.index', compact('departamentos'));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function create()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return view('departamentos.create');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function store(Request $request)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $data = $request->validate([[m
+[32m+[m[32m            'nombre_departamento' => 'required|string|max:150|unique:departamentos,nombre_departamento',[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        Departamento::create($data);[m
+[32m+[m
+[32m+[m[32m        return redirect()->route('departamentos.index')->with('success', 'Departamento creado correctamente.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function edit($id)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $departamento = Departamento::findOrFail($id);[m
+[32m+[m[32m        return view('departamentos.edit', compact('departamento'));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function update(Request $request, $id)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $departamento = Departamento::findOrFail($id);[m
+[32m+[m
+[32m+[m[32m        $data = $request->validate([[m
+[32m+[m[32m            'nombre_departamento' => 'required|string|max:150|unique:departamentos,nombre_departamento,' . $departamento->id_departamento . ',id_departamento',[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        $departamento->update($data);[m
+[32m+[m
+[32m+[m[32m        return redirect()->route('departamentos.index')->with('success', 'Departamento actualizado correctamente.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function destroy($id)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $departamento = Departamento::findOrFail($id);[m
+[32m+[m[32m        // Check for related tickets before deleting[m
+[32m+[m[32m        $tieneTickets = Ticket::where('id_departamento', $departamento->id_departamento)->exists();[m
+[32m+[m
+[32m+[m[32m        if ($tieneTickets) {[m
+[32m+[m[32m            return redirect()->route('departamentos.index')[m
+[32m+[m[32m                ->with('success', 'No se puede eliminar el departamento porque tiene tickets asociados.');[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        $departamento->delete();[m
+[32m+[m
+[32m+[m[32m        return redirect()->route('departamentos.index')->with('success', 'Departamento eliminado correctamente.');[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/Http/Controllers/ReporteController.php b/app/Http/Controllers/ReporteController.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..40b1950[m
+[1m--- /dev/null[m
+[1m+++ b/app/Http/Controllers/ReporteController.php[m
+[36m@@ -0,0 +1,93 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Http\Controllers;[m
+[32m+[m
+[32m+[m[32muse Illuminate\Http\Request;[m
+[32m+[m[32muse App\Models\GestionTicket;[m
+[32m+[m[32muse App\Models\User;[m
+[32m+[m[32muse App\Models\Departamento;[m
+[32m+[m[32muse App\Models\EstatusTicket;[m
+[32m+[m[32muse App\Services\ReporteService;[m
+[32m+[m[32muse Barryvdh\DomPDF\Facade\Pdf;[m
+[32m+[m
+[32m+[m[32mclass ReporteController extends Controller[m
+[32m+[m[32m{[m
+[32m+[m[32m    protected $reporteService;[m
+[32m+[m
+[32m+[m[32m    public function __construct(ReporteService $reporteService)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $this->reporteService = $reporteService;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Muestra el formulario con filtros para generar el reporte.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function index()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $tickets = GestionTicket::with(['usuario', 'departamento', 'estatus', 'auxiliar'])->get();[m
+[32m+[m
+[32m+[m[32m        return view('reportes.index', [[m
+[32m+[m[32m            'auxiliares'     => User::where('id_rol', 3)->get(),[m
+[32m+[m[32m            'departamentos'  => Departamento::all(),[m
+[32m+[m[32m            'estatus'        => EstatusTicket::all(),[m
+[32m+[m[32m            'tickets'        => $tickets,[m
+[32m+[m[32m        ]);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Obtiene estadísticas y datos para los gráficos (AJAX)[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function obtenerEstadisticas(Request $request)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $estatus_id       = $request->estatus_id ?? null;[m
+[32m+[m[32m        $auxiliar_id      = $request->auxiliar_id ?? null;[m
+[32m+[m[32m        $departamento_id  = $request->departamento_id ?? null;[m
+[32m+[m
+[32m+[m[32m        $tickets = $this->reporteService->obtenerTicketsFiltrados([m
+[32m+[m[32m            $estatus_id,[m
+[32m+[m[32m            $auxiliar_id,[m
+[32m+[m[32m            $departamento_id[m
+[32m+[m[32m        );[m
+[32m+[m
+[32m+[m[32m        $estadisticas = $this->reporteService->calcularEstadisticas($tickets);[m
+[32m+[m
+[32m+[m[32m        $evolucion = $this->reporteService->obtenerEvolucionTemporal([m
+[32m+[m[32m            $estatus_id,[m
+[32m+[m[32m            $auxiliar_id,[m
+[32m+[m[32m            $departamento_id[m
+[32m+[m[32m        );[m
+[32m+[m
+[32m+[m[32m        return response()->json([[m
+[32m+[m[32m            'estadisticas' => $estadisticas,[m
+[32m+[m[32m            'evolucion'    => $evolucion[m
+[32m+[m[32m        ]);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Genera y descarga el PDF según los filtros aplicados.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function generarPDF(Request $request)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $estatus_id       = $request->estatus_id ?? null;[m
+[32m+[m[32m        $auxiliar_id      = $request->auxiliar_id ?? null;[m
+[32m+[m[32m        $departamento_id  = $request->departamento_id ?? null;[m
+[32m+[m
+[32m+[m[32m        $tickets = $this->reporteService->obtenerTicketsFiltrados([m
+[32m+[m[32m            $estatus_id,[m
+[32m+[m[32m            $auxiliar_id,[m
+[32m+[m[32m            $departamento_id[m
+[32m+[m[32m        );[m
+[32m+[m
+[32m+[m[32m        $estadisticas = $this->reporteService->calcularEstadisticas($tickets);[m
+[32m+[m
+[32m+[m[32m        $pdf = Pdf::loadView('reportes.pdf', [[m
+[32m+[m[32m            'tickets'     => $tickets,[m
+[32m+[m[32m            'estadisticas'=> $estadisticas,[m
+[32m+[m[32m            'filtros'     => $request->all()[m
+[32m+[m[32m        ])->setPaper('letter', 'portrait');[m
+[32m+[m
+[32m+[m[32m        return $pdf->download([m
+[32m+[m[32m            'Reporte_Tickets_' . now()->format('d-m-Y_H-i-s') . '.pdf'[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/Http/Controllers/TicketController.php b/app/Http/Controllers/TicketController.php[m
+[1mindex 2a67265..a670275 100644[m
+[1m--- a/app/Http/Controllers/TicketController.php[m
+[1m+++ b/app/Http/Controllers/TicketController.php[m
+[36m@@ -81,9 +81,16 @@[m [mpublic function store(Request $request)[m
+             $estatusPendiente = EstatusTicket::where('nombre_estatus', 'pendiente')->first();[m
+ [m
+             if (!$estatusPendiente) {[m
+[31m-                return redirect()->back()[m
+[31m-                    ->withInput()[m
+[31m-                    ->with('error', 'Error: No existe el estado "pendiente". Por favor, ejecuta el seeder de estatus');[m
+[32m+[m[32m                // Si no existe el estatus 'pendiente' intentamos crearlo para no bloquear la creación[m
+[32m+[m[32m                try {[m
+[32m+[m[32m                    $estatusPendiente = EstatusTicket::create(['nombre_estatus' => 'pendiente']);[m
+[32m+[m[32m                    Log::warning('Estatus "pendiente" inexistente. Se creó automáticamente.');[m
+[32m+[m[32m                } catch (\Exception $ex) {[m
+[32m+[m[32m                    Log::error('No se pudo crear el estatus pendiente: ' . $ex->getMessage());[m
+[32m+[m[32m                    return redirect()->back()[m
+[32m+[m[32m                        ->withInput()[m
+[32m+[m[32m                        ->with('error', 'Error: No existe el estado "pendiente" y no se pudo crear automáticamente. Por favor, ejecuta el seeder de estatus');[m
+[32m+[m[32m                }[m
+             }[m
+ [m
+             $ticket = new Ticket();[m
+[1mdiff --git a/app/Models/Reporte.php b/app/Models/Reporte.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..858a268[m
+[1m--- /dev/null[m
+[1m+++ b/app/Models/Reporte.php[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Models;[m
+[32m+[m
+[32m+[m[32muse Illuminate\Database\Eloquent\Factories\HasFactory;[m
+[32m+[m[32muse Illuminate\Database\Eloquent\Model;[m
+[32m+[m
+[32m+[m[32mclass Reporte extends Model[m
+[32m+[m[32m{[m
+[32m+[m[32m    use HasFactory;[m
+[32m+[m
+[32m+[m[32m    // Modelo mínimo para compatibilidad con relaciones.[m
+[32m+[m[32m    protected $table = 'reportes';[m
+[32m+[m[32m    // No asumimos la clave primaria ni columnas específicas aquí.[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/Models/Ticket.php b/app/Models/Ticket.php[m
+[1mindex fcb01e6..729827e 100644[m
+[1m--- a/app/Models/Ticket.php[m
+[1m+++ b/app/Models/Ticket.php[m
+[36m@@ -4,6 +4,10 @@[m
+ [m
+ use Illuminate\Database\Eloquent\Factories\HasFactory;[m
+ use Illuminate\Database\Eloquent\Model;[m
+[32m+[m[32muse App\Models\User;[m
+[32m+[m[32muse App\Models\Departamento;[m
+[32m+[m[32muse App\Models\EstatusTicket;[m
+[32m+[m[32muse App\Models\Reporte;[m
+ [m
+ class Ticket extends Model[m
+ {[m
+[36m@@ -67,4 +71,18 @@[m [mpublic function reportes()[m
+     {[m
+         return $this->hasMany(Reporte::class, 'id_ticket', 'id_ticket');[m
+     }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Compatibilidad: permitir acceder y asignar usando el nombre en inglés[m
+[32m+[m[32m     * `description` mientras la columna real en la BD es `descripcion`.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function getDescriptionAttribute()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return $this->attributes['descripcion'] ?? null;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function setDescriptionAttribute($value)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $this->attributes['descripcion'] = $value;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/app/Services/ReporteService.php b/app/Services/ReporteService.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8f24d2f[m
+[1m--- /dev/null[m
+[1m+++ b/app/Services/ReporteService.php[m
+[36m@@ -0,0 +1,133 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Services;[m
+[32m+[m
+[32m+[m[32muse App\Models\GestionTicket;[m
+[32m+[m[32muse App\Models\EstatusTicket;[m
+[32m+[m[32muse Illuminate\Support\Collection;[m
+[32m+[m
+[32m+[m[32mclass ReporteService[m
+[32m+[m[32m{[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Obtiene tickets filtrados según criterios[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function obtenerTicketsFiltrados($estatus_id = null, $auxiliar_id = null, $departamento_id = null)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $query = GestionTicket::query()->with(['usuario', 'departamento', 'estatus', 'auxiliar']);[m
+[32m+[m
+[32m+[m[32m        if ($estatus_id) {[m
+[32m+[m[32m            $query->where('id_estatus', $estatus_id);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if ($auxiliar_id) {[m
+[32m+[m[32m            $query->where('id_auxiliar', $auxiliar_id);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if ($departamento_id) {[m
+[32m+[m[32m            $query->where('id_departamento', $departamento_id);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return $query->get();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Calcula estadísticas para los gráficos[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function calcularEstadisticas($tickets)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return [[m
+[32m+[m[32m            'total' => $tickets->count(),[m
+[32m+[m[32m            'por_estatus' => $this->contarPorEstatus($tickets),[m
+[32m+[m[32m            'por_auxiliar' => $this->contarPorAuxiliar($tickets),[m
+[32m+[m[32m            'por_departamento' => $this->contarPorDepartamento($tickets),[m
+[32m+[m[32m            'tiempo_promedio' => $this->calcularTiempoPromedio($tickets),[m
+[32m+[m[32m        ];[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Cuenta tickets por estatus[m
+[32m+[m[32m     */[m
+[32m+[m[32m    private function contarPorEstatus($tickets): array[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $conteos = $tickets->groupBy('id_estatus')[m
+[32m+[m[32m            ->map(fn($grupo) => $grupo->count())[m
+[32m+[m[32m            ->toArray();[m
+[32m+[m
+[32m+[m[32m        $etiquetas = EstatusTicket::whereIn('id_estatus', array_keys($conteos))->get();[m
+[32m+[m[41m        [m
+[32m+[m[32m        $resultado = [];[m
+[32m+[m[32m        foreach ($etiquetas as $estatus) {[m
+[32m+[m[32m            $resultado[$estatus->nombre] = $conteos[$estatus->id_estatus] ?? 0;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return $resultado;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Cuenta tickets por auxiliar[m
+[32m+[m[32m     */[m
+[32m+[m[32m    private function contarPorAuxiliar($tickets): array[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return $tickets->groupBy(function($ticket) {[m
+[32m+[m[32m            return $ticket->auxiliar?->nombre ?? 'Sin asignar';[m
+[32m+[m[32m        })[m
+[32m+[m[32m        ->map(fn($grupo) => $grupo->count())[m
+[32m+[m[32m        ->toArray();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Cuenta tickets por departamento[m
+[32m+[m[32m     */[m
+[32m+[m[32m    private function contarPorDepartamento($tickets): array[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return $tickets->groupBy(function($ticket) {[m
+[32m+[m[32m            return $ticket->departamento?->nombre_departamento ?? 'Sin departamento';[m
+[32m+[m[32m        })[m
+[32m+[m[32m        ->map(fn($grupo) => $grupo->count())[m
+[32m+[m[32m        ->toArray();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Calcula tiempo promedio de resolución (en días)[m
+[32m+[m[32m     */[m
+[32m+[m[32m    private function calcularTiempoPromedio($tickets): float[m
+[32m+[m[32m    {[m
+[32m+[m[32m        if ($tickets->isEmpty()) {[m
+[32m+[m[32m            return 0;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        $tiempos = $tickets->map(function ($ticket) {[m
+[32m+[m[32m            $inicio = $ticket->fecha_creacion;[m
+[32m+[m[32m            $fin = $ticket->fecha_finalizacion ?? now();[m
+[32m+[m[32m            return \Carbon\Carbon::parse($fin)->diffInDays(\Carbon\Carbon::parse($inicio));[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        return round($tiempos->avg(), 2);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * Obtiene datos para gráfico de línea (evolución temporal)[m
+[32m+[m[32m     */[m
+[32m+[m[32m    public function obtenerEvolucionTemporal($estatus_id = null, $auxiliar_id = null, $departamento_id = null)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $query = GestionTicket::query();[m
+[32m+[m
+[32m+[m[32m        if ($estatus_id) {[m
+[32m+[m[32m            $query->where('id_estatus', $estatus_id);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if ($auxiliar_id) {[m
+[32m+[m[32m            $query->where('id_auxiliar', $auxiliar_id);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if ($departamento_id) {[m
+[32m+[m[32m            $query->where('id_departamento', $departamento_id);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        // Agrupa por fecha y cuenta[m
+[32m+[m[32m        $datos = $query->selectRaw('DATE(fecha_creacion) as fecha, COUNT(*) as total')[m
+[32m+[m[32m            ->groupBy('fecha')[m
+[32m+[m[32m            ->orderBy('fecha')[m
+[32m+[m[32m            ->get();[m
+[32m+[m
+[32m+[m[32m        return $datos->mapWithKeys(fn($item) => [$item->fecha => $item->total])->toArray();[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/composer.json b/composer.json[m
+[1mindex 44c6054..eef6f76 100644[m
+[1m--- a/composer.json[m
+[1m+++ b/composer.json[m
+[36m@@ -7,6 +7,7 @@[m
+     "license": "MIT",[m
+     "require": {[m
+         "php": "^8.2",[m
+[32m+[m[32m        "barryvdh/laravel-dompdf": "^3.1",[m
+         "laravel/framework": "^12.0",[m
+         "laravel/tinker": "^2.10.1"[m
+     },[m
+[1mdiff --git a/composer.lock b/composer.lock[m
+[1mindex 2647bd8..ff070f8 100644[m
+[1m--- a/composer.lock[m
+[1m+++ b/composer.lock[m
+[36m@@ -4,8 +4,85 @@[m
+         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",[m
+         "This file is @generated automatically"[m
+     ],[m
+[31m-    "content-hash": "c514d8f7b9fc5970bdd94287905ef584",[m
+[32m+[m[32m    "content-hash": "398ac677a9c6311454725e156f8de59c",[m
+     "packages": [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "barryvdh/laravel-dompdf",[m
+[32m+[m[32m            "version": "v3.1.1",[m
+[32m+[m[32m            "source": {[m
+[32m+[m[32m                "type": "git",[m
+[32m+[m[32m                "url": "https://github.com/barryvdh/laravel-dompdf.git",[m
+[32m+[m[32m                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "dist": {[m
+[32m+[m[32m                "type": "zip",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",[m
+[32m+[m[32m                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",[m
+[32m+[m[32m                "shasum": ""[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require": {[m
+[32m+[m[32m                "dompdf/dompdf": "^3.0",[m
+[32m+[m[32m                "illuminate/support": "^9|^10|^11|^12",[m
+[32m+[m[32m                "php": "^8.1"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require-dev": {[m
+[32m+[m[32m                "larastan/larastan": "^2.7|^3.0",[m
+[32m+[m[32m                "orchestra/testbench": "^7|^8|^9|^10",[m
+[32m+[m[32m                "phpro/grumphp": "^2.5",[m
+[32m+[m[32m                "squizlabs/php_codesniffer": "^3.5"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "type": "library",[m
+[32m+[m[32m            "extra": {[m
+[32m+[m[32m                "laravel": {[m
+[32m+[m[32m                    "aliases": {[m
+[32m+[m[32m                        "PDF": "Barryvdh\\DomPDF\\Facade\\Pdf",[m
+[32m+[m[32m                        "Pdf": "Barryvdh\\DomPDF\\Facade\\Pdf"[m
+[32m+[m[32m                    },[m
+[32m+[m[32m                    "providers": [[m
+[32m+[m[32m                        "Barryvdh\\DomPDF\

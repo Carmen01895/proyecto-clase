@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Departamento;
+use App\Models\EstatusTicket;
+use App\Models\Reporte;
 
 class Ticket extends Model
 {
@@ -66,5 +70,19 @@ class Ticket extends Model
     public function reportes()
     {
         return $this->hasMany(Reporte::class, 'id_ticket', 'id_ticket');
+    }
+
+    /**
+     * Compatibilidad: permitir acceder y asignar usando el nombre en inglés
+     * `description` mientras la columna real en la BD es `descripcion`.
+     */
+    public function getDescriptionAttribute()
+    {
+        return $this->attributes['descripcion'] ?? null;
+    }
+
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['descripcion'] = $value;
     }
 }

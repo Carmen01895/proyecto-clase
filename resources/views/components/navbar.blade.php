@@ -63,16 +63,17 @@
                         </a>
                     </li>
 
-                    {{-- Reportes (Pendiente) --}}
+                    {{-- Reportes --}}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">
+                        <a class="nav-link text-white {{ request()->routeIs('reportes.index') ? 'active' : '' }}" 
+                           href="{{ route('reportes.index') }}">
                             Reportes
                         </a>
                     </li>
 
-                    {{-- Departamentos (Pendiente) --}}
+                    {{-- Departamentos --}}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">
+                        <a class="nav-link text-white {{ request()->routeIs('departamentos.*') ? 'active' : '' }}" href="{{ route('departamentos.index') }}">
                             Departamentos
                         </a>
                     </li>
