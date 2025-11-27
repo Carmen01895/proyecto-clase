@@ -82,7 +82,7 @@
 
                             <td>
                                 {{-- CAMBIO 3: ¡AQUÍ ESTÁ TU BOTÓN! Ya lo tenías, solo verifiqué la ruta --}}
-                                <a href="{{ route('tickets.detalle', ['id' => $ticket->id_ticket]) }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('tickets.detalle', $ticket->id_ticket) }}" class="btn btn-primary btn-sm">
                                     Ver Detalles
                                 </a>
                             </td>

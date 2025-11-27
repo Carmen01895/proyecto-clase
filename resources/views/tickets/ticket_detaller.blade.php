@@ -317,7 +317,7 @@
             <h4 class="mb-0">
                 <span class="badge-ticket">#{{ $ticket->id_ticket }}</span>
             </h4>
-            <a href="{{ route('auxiliar.tickets') }}" class="btn btn-volver">
+            <a href="{{ route('tickets.misAsignados') }}" class="btn btn-volver">
                 <i class="bi bi-arrow-left"></i> Volver al Listado
             </a>
         </div>

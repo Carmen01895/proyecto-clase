@@ -18,7 +18,6 @@ class TicketDetallesController extends Controller
     public function index(Request $request)
     {
         try {
-            // LÓGICA DE TUS AMIGAS (FILTROS Y BÚSQUEDAS) - ¡SE RESPETA!
             $query = Ticket::with(['usuario', 'departamento', 'estatus'])
                 ->where('id_auxiliar', Auth::id());
 
@@ -36,8 +35,6 @@ class TicketDetallesController extends Controller
 
             $tickets = $query->orderBy('fecha_creacion', 'desc')->paginate(10);
             
-            // --- AQUÍ EL ÚNICO CAMBIO ---
-            // Antes devolvía JSON, ahora devuelve TU VISTA
             return view('mis_tickets_asignados', compact('tickets'));
 
         } catch (\Exception $e) {
@@ -52,19 +49,21 @@ class TicketDetallesController extends Controller
     public function show($id)
     {
         try {
-            // LÓGICA DE TUS AMIGAS (CARGAR RELACIONES)
+            // Cargar el ticket con todas sus relaciones
             $ticket = Ticket::with(['usuario', 'asignado', 'departamento', 'estatus'])
                 ->findOrFail($id);
 
             // Verificar que el ticket esté asignado al auxiliar autenticado
             if ($ticket->id_auxiliar !== Auth::id()) {
-                return redirect()->route('tickets.misAsignados') // Te regresa a tu lista
+                return redirect()->route('tickets.misAsignados')
                     ->with('error', 'No tienes permiso para ver este ticket');
             }
 
-            // --- AQUÍ EL CAMBIO ---
-            // Conectamos con el archivo cascarón que creaste para Tania
-            return view('detalle_ticket', compact('ticket'));
+            // CORRECCIÓN: Pasar el auxiliar autenticado a la vista
+            $auxiliar = Auth::user();
+
+            // Pasar tanto el ticket como el auxiliar a la vista
+            return view('tickets.ticket_detaller', compact('ticket', 'auxiliar'));
 
         } catch (\Exception $e) {
             Log::error('Error al mostrar detalles del ticket: ' . $e->getMessage());
@@ -74,7 +73,7 @@ class TicketDetallesController extends Controller
     }
 
     /**
-     * Actualiza el estado del ticket (ESTO ES DE TANIA - ¡INTACTO!)
+     * Actualiza el estado del ticket
      */
     public function actualizar(Request $request, $id)
     {
