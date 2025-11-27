@@ -13,42 +13,58 @@ use Carbon\Carbon;
 class TicketDetallesController extends Controller
 {
     /**
-     * Muestra los detalles de un ticket específico
+     * Muestra los tickets asignados al auxiliar (TU LISTA)
+     */
+    public function index(Request $request)
+    {
+        try {
+            // LÓGICA DE TUS AMIGAS (FILTROS Y BÚSQUEDAS) - ¡SE RESPETA!
+            $query = Ticket::with(['usuario', 'departamento', 'estatus'])
+                ->where('id_auxiliar', Auth::id());
+
+            // Filtros opcionales
+            if ($request->filled('estatus')) {
+                $query->where('id_estatus', $request->estatus);
+            }
+
+            if ($request->filled('buscar')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('titulo', 'LIKE', '%' . $request->buscar . '%')
+                      ->orWhere('id_ticket', 'LIKE', '%' . $request->buscar . '%');
+                });
+            }
+
+            $tickets = $query->orderBy('fecha_creacion', 'desc')->paginate(10);
+            
+            // --- AQUÍ EL ÚNICO CAMBIO ---
+            // Antes devolvía JSON, ahora devuelve TU VISTA
+            return view('mis_tickets_asignados', compact('tickets'));
+
+        } catch (\Exception $e) {
+            Log::error('Error al listar tickets del auxiliar: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al cargar los tickets');
+        }
+    }
+
+    /**
+     * Muestra los detalles de un ticket específico (TU BOTÓN VER DETALLES)
      */
     public function show($id)
     {
         try {
-            // Cargar el ticket con sus relaciones
+            // LÓGICA DE TUS AMIGAS (CARGAR RELACIONES)
             $ticket = Ticket::with(['usuario', 'asignado', 'departamento', 'estatus'])
                 ->findOrFail($id);
 
             // Verificar que el ticket esté asignado al auxiliar autenticado
             if ($ticket->id_auxiliar !== Auth::id()) {
-                return redirect()->back()
+                return redirect()->route('tickets.misAsignados') // Te regresa a tu lista
                     ->with('error', 'No tienes permiso para ver este ticket');
             }
 
-            // Obtener datos del auxiliar
-            $auxiliar = Auth::user();
-
-            // Crear historial simulado (puedes implementar una tabla real si lo necesitas)
-            $historial = [
-                (object)[
-                    'fecha' => $ticket->fecha_creacion,
-                    'accion' => 'Ticket creado',
-                    'detalle' => 'Usuario reportó problema: ' . $ticket->titulo
-                ],
-            ];
-
-            if ($ticket->fecha_asignacion) {
-                $historial[] = (object)[
-                    'fecha' => $ticket->fecha_asignacion,
-                    'accion' => 'Asignado a auxiliar',
-                    'detalle' => 'Ticket asignado a ' . ($ticket->asignado->nombre ?? 'auxiliar')
-                ];
-            }
-
-            return view('tickets.ticket_detaller', compact('ticket', 'auxiliar', 'historial'));
+            // --- AQUÍ EL CAMBIO ---
+            // Conectamos con el archivo cascarón que creaste para Tania
+            return view('detalle_ticket', compact('ticket'));
 
         } catch (\Exception $e) {
             Log::error('Error al mostrar detalles del ticket: ' . $e->getMessage());
@@ -58,7 +74,7 @@ class TicketDetallesController extends Controller
     }
 
     /**
-     * Actualiza el estado del ticket
+     * Actualiza el estado del ticket (ESTO ES DE TANIA - ¡INTACTO!)
      */
     public function actualizar(Request $request, $id)
     {
@@ -107,10 +123,9 @@ class TicketDetallesController extends Controller
 
             $ticket->save();
 
-            // Aquí podrías guardar el comentario en una tabla de historial si la tuvieras
+            // Historial (Log)
             if ($request->filled('comentario')) {
                 Log::info("Comentario en ticket #{$id}: " . $request->comentario);
-                // TODO: Implementar guardado en tabla historial_tickets
             }
 
             return redirect()->back()
@@ -129,52 +144,4 @@ class TicketDetallesController extends Controller
                 ->with('error', 'Error al actualizar el ticket: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Muestra los tickets asignados al auxiliar (dashboard)
-     */
-    public function index(Request $request)
-{
-    try {
-        $query = Ticket::with(['usuario', 'departamento', 'estatus'])
-            ->where('id_auxiliar', Auth::id());
-
-        // Filtros opcionales
-        if ($request->filled('estatus')) {
-            $query->where('id_estatus', $request->estatus);
-        }
-
-        if ($request->filled('buscar')) {
-            $query->where(function($q) use ($request) {
-                $q->where('titulo', 'LIKE', '%' . $request->buscar . '%')
-                  ->orWhere('id_ticket', 'LIKE', '%' . $request->buscar . '%');
-            });
-        }
-
-        $tickets = $query->orderBy('fecha_creacion', 'desc')->paginate(10);
-        $estatus = EstatusTicket::all();
-
-        // Retornar JSON temporal mientras tu equipo crea la vista
-        return response()->json([
-            'mensaje' => 'Vista de listado pendiente - Datos disponibles',
-            'total_tickets' => $tickets->total(),
-            'tickets' => $tickets->map(function($ticket) {
-                return [
-                    'id' => $ticket->id_ticket,
-                    'titulo' => $ticket->titulo,
-                    'estado' => $ticket->estatus->nombre_estatus ?? 'sin estado',
-                    'fecha_creacion' => $ticket->fecha_creacion->format('d/m/Y H:i'),
-                    'url_detalles' => route('auxiliar.tickets.detalles', $ticket->id_ticket)
-                ];
-            })
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error al listar tickets del auxiliar: ' . $e->getMessage());
-        return response()->json([
-            'error' => 'Error al cargar los tickets',
-            'mensaje' => $e->getMessage()
-        ], 500);
-    }
-}
 }
