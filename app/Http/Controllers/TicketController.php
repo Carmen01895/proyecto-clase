@@ -174,4 +174,6 @@ class TicketController extends Controller
                 ->with('error', 'Error al eliminar el ticket: ' . $e->getMessage());
         }
     }
+
+    
 }
