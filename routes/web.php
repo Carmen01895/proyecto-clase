@@ -7,6 +7,7 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GestionTicketsController;
 use App\Http\Controllers\TicketDetallesController;
+use App\Http\Controllers\DashboardController;
 
 
 //Rutas de autenticación----------------------------------------------
@@ -87,3 +88,6 @@ Route::middleware(['auth','role:1'])->prefix('auxiliar')->group(function(){
     Route::post('/tickets/{id}/actualizar', [TicketDetallesController::class, 'actualizar'])
         ->name('auxiliar.tickets.actualizar');
 });
+
+
+

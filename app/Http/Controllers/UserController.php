@@ -16,21 +16,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. VALIDACIÓN
+        // 1. VALIDACIÓN CON REGEX Y MENSAJES EN ESPAÑOL
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            // Verifica unicidad en la columna 'correo' de la tabla 'usuarios'
+            // Añadidas REGEX para solo letras (pL: cualquier letra Unicode, \s: espacios, \-: guiones)
+            'nombre' => 'required|string|max:100|regex:/^[\pL\s\-]+$/u', 
+            'apellido' => 'required|string|max:100|regex:/^[\pL\s\-]+$/u',
             'email' => 'required|string|email|max:255|unique:usuarios,correo', 
             'password' => 'required|string|min:6',
-            'puesto' => 'required|string|max:100',
-            
-            // CORRECCIÓN CLAVE: Usamos 'id_rol' y 'id_departamento'
-            // Ya que son las claves primarias reales de esas tablas (confirmado con la imagen 'roles')
+            'puesto' => 'required|string|max:100|regex:/^[\pL\s\-]+$/u',
             'id_rol' => 'required|exists:roles,id_rol', 
             'id_departamento' => 'required|exists:departamentos,id_departamento', 
-            
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+        ], 
+        [
+            // MENSAJES PERSONALIZADOS
+            'email.unique' => 'El correo electrónico ya está registrado. Por favor, utiliza uno diferente.',
+            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
+            'nombre.regex' => 'El nombre solo debe contener letras, espacios y guiones.',
+            'apellido.regex' => 'El apellido solo debe contener letras, espacios y guiones.',
+            'puesto.regex' => 'El puesto solo debe contener letras, espacios y guiones.',
         ]);
 
         // 2. Lógica de subida de la FOTO
@@ -90,16 +94,24 @@ class UserController extends Controller
         $usuario = User::findOrFail($id);
 
   
+        // VALIDACIÓN CON REGEX Y MENSAJES EN ESPAÑOL
         $request->validate([
-            'nombre'          => 'required|string|max:100',
-            'apellido'        => 'required|string|max:100',
+            // Añadidas REGEX para solo letras
+            'nombre'          => 'required|string|max:100|regex:/^[\pL\s\-]+$/u',
+            'apellido'        => 'required|string|max:100|regex:/^[\pL\s\-]+$/u',
             'email'           => 'required|email|max:255|unique:usuarios,correo,' . $id . ',id_usuario',
-            'puesto'          => 'required|string|max:100',
+            'puesto'          => 'required|string|max:100|regex:/^[\pL\s\-]+$/u',
             'id_rol'          => 'required',
             'id_departamento' => 'required',
             'foto'            => 'nullable|image|max:2048',
-
             'password'        => 'nullable|string|min:6', 
+        ],
+        [
+            // MENSAJES PERSONALIZADOS
+            'email.unique' => 'El correo electrónico ya está registrado. Por favor, utiliza uno diferente.',
+            'nombre.regex' => 'El nombre solo debe contener letras, espacios y guiones.',
+            'apellido.regex' => 'El apellido solo debe contener letras, espacios y guiones.',
+            'puesto.regex' => 'El puesto solo debe contener letras, espacios y guiones.',
         ]);
 
 
