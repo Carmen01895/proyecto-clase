@@ -48,8 +48,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="puesto">Puesto</label>
-                    <input type="text" id="puesto" name="puesto" value="{{ $usuario->puesto }}" readonly>
+                    <label for="puesto">Departamento</label>
+                    <input type="text" id="departamento" class="form-control" 
+                           value="{{ $usuario->departamento->nombre_departamento ?? 'Sin Departamento asignado' }}" 
+                           readonly>
                 </div>
 
                 <div class="form-group">

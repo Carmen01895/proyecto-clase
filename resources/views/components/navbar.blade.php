@@ -3,7 +3,7 @@
     if(Auth::user()->id_rol == 3) { // Empleado
         $homeRoute = route('tickets.historial');
     } elseif(Auth::user()->id_rol == 2) { // Jefe
-        $homeRoute = route('gestion.tickets');
+        $homeRoute = route('reportes.index');
     } elseif(Auth::user()->id_rol == 1) { // Admin
         // Si no tienes una "home" de admin, puedes poner 'gestion' o dejarlo en '#'
         $homeRoute = route('gestion'); 
@@ -57,17 +57,17 @@
                 @if(Auth::user()->id_rol == 2)
                     {{-- Vista Principal --}}
                     <li class="nav-item">
-                        <a class="nav-link text-white {{ request()->routeIs('gestion.tickets') ? 'active' : '' }}"
-                           href="{{ route('gestion.tickets') }}">
+                        <a class="nav-link text-white {{ request()->routeIs('reportes.index') ? 'active' : '' }}"
+                           href="{{ route('reportes.index') }}">
                             Inicio
                         </a>
                     </li>
 
-                    {{-- Reportes --}}
+                    {{-- Tickets --}}
                     <li class="nav-item">
-                        <a class="nav-link text-white {{ request()->routeIs('reportes.index') ? 'active' : '' }}" 
-                           href="{{ route('reportes.index') }}">
-                            Reportes
+                        <a class="nav-link text-white {{ request()->routeIs('gestion.tickets') ? 'active' : '' }}" 
+                           href="{{ route('gestion.tickets') }}">
+                            Tickets
                         </a>
                     </li>
 

@@ -37,7 +37,7 @@ class LoginController extends Controller
                     return redirect()->intended(route('tickets.historial'));
 
                 case $rol_jefe:
-                    return redirect()->intended('/jefe/gestion/ticket');
+                    return redirect()->intended('reportes');
 
                 case $rol_admin:
                     return redirect()->intended(route('tickets.misAsignados'));

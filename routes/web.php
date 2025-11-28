@@ -82,6 +82,22 @@ Route::middleware(['auth','role:2'])->group(function(){
         Route::put('/{id}', [DepartamentoController::class, 'update'])->name('departamentos.update');
         Route::delete('/{id}', [DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
     });
+
+    Route::prefix('departamentos')->group(function () {
+        Route::get('/', [DepartamentoController::class, 'index'])->name('departamentos.index');
+        Route::get('/crear', [DepartamentoController::class, 'create'])->name('departamentos.create');
+        Route::post('/guardar', [DepartamentoController::class, 'store'])->name('departamentos.store');
+        Route::get('/editar/{id}', [DepartamentoController::class, 'edit'])->name('departamentos.edit');
+        Route::put('/actualizar/{id}', [DepartamentoController::class, 'update'])->name('departamentos.update');
+        Route::delete('/eliminar/{id}', [DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
+    });
+
+    //Rutas de Reportes PDF (Jefe)
+    Route::prefix('reportes')->group(function () {
+        Route::get('/', [ReporteController::class, 'index'])->name('reportes.index');
+        Route::post('/pdf', [ReporteController::class, 'generarPDF'])->name('reportes.pdf');
+        Route::post('/estadisticas', [ReporteController::class, 'obtenerEstadisticas'])->name('reportes.estadisticas');
+    });
 });
 
 
@@ -102,22 +118,5 @@ Route::middleware(['auth','role:1'])->prefix('auxiliar')->group(function(){
     // Actualizar el estado del ticket
     Route::post('/tickets/{id}/actualizar', [TicketDetallesController::class, 'actualizar'])
         ->name('auxiliar.tickets.actualizar');
-});
-
-// RUTAS DEL REPORTE PDF (JEFE) ------------------------------------------
-Route::middleware(['auth','role:2'])->prefix('reportes')->group(function () {
-    Route::get('/', [ReporteController::class, 'index'])->name('reportes.index');
-    Route::post('/pdf', [ReporteController::class, 'generarPDF'])->name('reportes.pdf');
-    Route::post('/estadisticas', [ReporteController::class, 'obtenerEstadisticas'])->name('reportes.estadisticas');
-});
-
-// RUTAS DE DEPARTAMENTOS --------------------------------------------------
-Route::middleware(['auth','role:1'])->prefix('departamentos')->group(function () {
-    Route::get('/', [DepartamentoController::class, 'index'])->name('departamentos.index');
-    Route::get('/crear', [DepartamentoController::class, 'create'])->name('departamentos.create');
-    Route::post('/guardar', [DepartamentoController::class, 'store'])->name('departamentos.store');
-    Route::get('/editar/{id}', [DepartamentoController::class, 'edit'])->name('departamentos.edit');
-    Route::put('/actualizar/{id}', [DepartamentoController::class, 'update'])->name('departamentos.update');
-    Route::delete('/eliminar/{id}', [DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
 });
 

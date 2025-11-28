@@ -97,6 +97,7 @@ class TicketController extends Controller
             $ticket->titulo = $request->titulo;
             $ticket->descripcion = $request->descripcion;
             $ticket->id_usuario = Auth::id();
+            $ticket->id_departamento = Auth::user()->id_departamento;
             $ticket->id_estatus = $estatusPendiente->id_estatus;
 
             if ($request->hasFile('archivo')) {

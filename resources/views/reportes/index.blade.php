@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body style="font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%); min-height: 100vh;">
+    <x-navbar />
     
     <div class="container-fluid py-4">
         <!-- HEADER -->
@@ -22,9 +23,6 @@
                         </h1>
                         <p class="text-white-50">Análisis detallado y generación de reportes en PDF</p>
                     </div>
-                    <a href="{{ route('gestion.tickets') }}" class="btn btn-light" style="border-radius: 50px; padding: 10px 25px;">
-                        <i class="fas fa-arrow-left me-2"></i>Volver
-                    </a>
                 </div>
             </div>
         </div>
