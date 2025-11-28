@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Departamento;
 use App\Models\EstatusTicket;
 use Carbon\Carbon;
+use App\Models\ticket;
 
 class GestionTicketsController extends Controller
 {
@@ -89,5 +90,17 @@ class GestionTicketsController extends Controller
         $ticket->save();
 
         return redirect()->back()->with('success', 'Asignación cancelada');
+    }
+
+     public function verDetalle($id)
+    {
+        // Usamos 'Ticket' en lugar de 'GestionTicket'
+        $ticket = Ticket::findOrFail($id);
+
+        return response()->json([
+            'titulo' => 'Ticket #' . $ticket->id_ticket . ': ' . $ticket->titulo,
+            'descripcion' => $ticket->descripcion,
+            'evidencia' => $ticket->evidencia ? asset('storage/' . $ticket->evidencia) : null,
+        ]);
     }
 }

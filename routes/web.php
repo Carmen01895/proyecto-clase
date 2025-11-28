@@ -71,6 +71,9 @@ Route::middleware(['auth','role:2'])->group(function(){
         Route::put('/cancelar/{id}', [GestionTicketsController::class, 'cancelarAsignacion'])
             ->name('gestion.cancelar');
 
+        Route::get('/detalle/{id}', [GestionTicketsController::class, 'verDetalle'])
+            ->name('gestion.verDetalle');
+
     });
 
     // Rutas para gestión de departamentos (Jefe)

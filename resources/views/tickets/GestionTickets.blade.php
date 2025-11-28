@@ -7,6 +7,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/tickets.css') }}">
 </head>
 <body>
@@ -116,6 +117,7 @@
                         <th>Auxiliar</th>
                         <th>Fecha creación</th>
                         <th>Asignar</th>
+                        <th>Detalles</th>
                     </tr>
                 </thead>
 
@@ -152,6 +154,14 @@
                                     </form>
                                 @endif
                             </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm btn-detalle" 
+                                        data-id="{{ $ticket->id_ticket }}" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalDetalleTicket">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+                            </td>
 
                         </tr>
                     @empty
@@ -174,6 +184,99 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="modalDetalleTicket" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitulo">Cargando...</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{-- Spinner de carga --}}
+                <div class="text-center mb-3" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+
+                {{-- Contenido: Solo Descripción y Evidencia --}}
+                <div id="ticketContent" style="display: none;">
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold text-primary">Descripción del problema:</label>
+                        <p id="modalDescripcion" class="p-3 rounded bg-light border mt-1" style="white-space: pre-wrap;"></p>
+                    </div>
+
+                    {{-- Botón de evidencia (solo si existe) --}}
+                    <div id="areaEvidencia" class="d-none text-end">
+                        <a href="#" id="linkEvidencia" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-paperclip"></i> Ver archivo adjunto
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modalDetalleTicket');
+        
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; 
+            const ticketId = button.getAttribute('data-id'); 
+
+            // Referencias
+            const spinner = document.getElementById('loadingSpinner');
+            const content = document.getElementById('ticketContent');
+            const titulo = document.getElementById('modalTitulo');
+            const descripcion = document.getElementById('modalDescripcion');
+            const areaEvidencia = document.getElementById('areaEvidencia');
+            const linkEvidencia = document.getElementById('linkEvidencia');
+            
+            // Resetear estado
+            spinner.style.display = 'block';
+            content.style.display = 'none';
+            titulo.textContent = 'Cargando...';
+            descripcion.textContent = '';
+
+            // Petición AJAX
+            // NOTA: Asegúrate que esta ruta coincide con la de web.php
+            fetch(`/jefe/gestion/ticket/detalle/${ticketId}`)
+                .then(response => {
+                    if (!response.ok) { throw new Error('Error en la red'); }
+                    return response.json();
+                })
+                .then(data => {
+                    titulo.textContent = data.titulo;
+                    descripcion.textContent = data.descripcion;
+
+                    if (data.evidencia) {
+                        linkEvidencia.href = data.evidencia;
+                        areaEvidencia.classList.remove('d-none');
+                    } else {
+                        areaEvidencia.classList.add('d-none');
+                    }
+
+                    spinner.style.display = 'none';
+                    content.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    titulo.textContent = 'Error';
+                    descripcion.textContent = 'No se pudo cargar la información del ticket. Intenta de nuevo.';
+                    spinner.style.display = 'none';
+                    content.style.display = 'block';
+                });
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
